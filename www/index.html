@@ -1,0 +1,3451 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#2563eb">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>EscanerGuías</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
+<script>
+if(typeof Html5Qrcode==='undefined'){
+  const s=document.createElement('script');
+  s.src='https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js';
+  document.head.appendChild(s);
+}
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ════════════════════════════════════════
+   VARIABLES — TEMA AZUL (default)
+════════════════════════════════════════ */
+:root {
+  --bg: #f0f4ff;
+  --surface: #ffffff;
+  --surface2: #e8eeff;
+  --surface3: #d8e4ff;
+  --accent: #2563eb;
+  --accent-light: #dbeafe;
+  --accent2: #f97316;
+  --accent2-light: #ffedd5;
+  --success: #16a34a;
+  --success-light: #dcfce7;
+  --danger: #dc2626;
+  --danger-light: #fee2e2;
+  --warn: #d97706;
+  --warn-light: #fef3c7;
+  --text: #0f172a;
+  --text2: #475569;
+  --text3: #94a3b8;
+  --border: #c7d7ff;
+  --border2: #e2e8f0;
+  --shadow: 0 1px 4px rgba(37,99,235,.07),0 2px 12px rgba(37,99,235,.08);
+  --shadow-lg: 0 4px 20px rgba(37,99,235,.13),0 8px 40px rgba(37,99,235,.10);
+  --r: 18px;
+  --r-sm: 12px;
+  --font: 'Space Grotesk', sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+  --hero-grad: linear-gradient(140deg,#2563eb 0%,#1d4ed8 100%);
+  --hero-shadow: 0 4px 24px rgba(37,99,235,.38);
+}
+
+/* ── TEMA OSCURO ── */
+[data-theme="dark"] {
+  --bg: #0d1117;
+  --surface: #161b27;
+  --surface2: #1e2436;
+  --surface3: #252c44;
+  --accent: #818cf8;
+  --accent-light: #1e1f3a;
+  --accent2: #fb923c;
+  --accent2-light: #2a1a0a;
+  --success: #4ade80;
+  --success-light: #0a2018;
+  --danger: #f87171;
+  --danger-light: #2a0a0a;
+  --warn: #fbbf24;
+  --warn-light: #231c00;
+  --text: #e8edf5;
+  --text2: #8b98b4;
+  --text3: #4a5568;
+  --border: #2a3354;
+  --border2: #252c42;
+  --shadow: 0 2px 12px rgba(0,0,0,.35);
+  --shadow-lg: 0 8px 36px rgba(0,0,0,.5);
+  --hero-grad: linear-gradient(140deg,#4338ca 0%,#312e81 100%);
+  --hero-shadow: 0 4px 24px rgba(99,102,241,.32);
+}
+
+/* ── TEMA VERDE ── */
+[data-theme="green"] {
+  --bg: #f0fdf4;
+  --surface: #ffffff;
+  --surface2: #dcfce7;
+  --surface3: #bbf7d0;
+  --accent: #16a34a;
+  --accent-light: #dcfce7;
+  --accent2: #f97316;
+  --accent2-light: #ffedd5;
+  --success: #15803d;
+  --success-light: #dcfce7;
+  --danger: #dc2626;
+  --danger-light: #fee2e2;
+  --warn: #d97706;
+  --warn-light: #fef3c7;
+  --text: #052e16;
+  --text2: #166534;
+  --text3: #86efac;
+  --border: #86efac;
+  --border2: #d1fae5;
+  --shadow: 0 2px 12px rgba(22,163,74,.10);
+  --shadow-lg: 0 8px 36px rgba(22,163,74,.16);
+  --hero-grad: linear-gradient(140deg,#16a34a 0%,#15803d 100%);
+  --hero-shadow: 0 4px 24px rgba(22,163,74,.38);
+}
+
+/* ── TEMA BLACK NEON ── */
+[data-theme="black"] {
+  --bg: #000000;
+  --surface: #0a0a0a;
+  --surface2: #111111;
+  --surface3: #1a1a1a;
+  --accent: #00ff88;
+  --accent-light: #001a0d;
+  --accent2: #ff00aa;
+  --accent2-light: #1a0011;
+  --success: #00ff88;
+  --success-light: #001a0d;
+  --danger: #ff2244;
+  --danger-light: #1a0008;
+  --warn: #ffee00;
+  --warn-light: #1a1600;
+  --text: #ffffff;
+  --text2: #aaffcc;
+  --text3: #336644;
+  --border: #00ff8833;
+  --border2: #00ff8818;
+  --shadow: 0 0 12px rgba(0,255,136,.10), 0 2px 8px rgba(0,0,0,.8);
+  --shadow-lg: 0 0 32px rgba(0,255,136,.18), 0 8px 40px rgba(0,0,0,.9);
+  --hero-grad: linear-gradient(140deg,#00cc66 0%,#007744 100%);
+  --hero-shadow: 0 0 32px rgba(0,255,136,.45);
+  --neon-glow: 0 0 8px rgba(0,255,136,.7), 0 0 24px rgba(0,255,136,.3);
+  --neon-glow2: 0 0 8px rgba(255,0,170,.7), 0 0 24px rgba(255,0,170,.3);
+}
+[data-theme="black"] .logo { text-shadow: var(--neon-glow); }
+[data-theme="black"] .logo span { text-shadow: var(--neon-glow2); }
+[data-theme="black"] .stat-n { text-shadow: var(--neon-glow); }
+[data-theme="black"] .cnt-badge { box-shadow: var(--neon-glow); }
+[data-theme="black"] .tab.active { text-shadow: 0 0 8px var(--accent); }
+[data-theme="black"] .btn-primary { box-shadow: var(--neon-glow); }
+[data-theme="black"] .btn-green { box-shadow: var(--neon-glow); }
+[data-theme="black"] header { border-bottom-color: #00ff8844; box-shadow: 0 0 20px rgba(0,255,136,.12); }
+[data-theme="black"] .card { border-color: #00ff8822; }
+[data-theme="black"] .flash.ok { text-shadow: var(--neon-glow); box-shadow: var(--neon-glow); }
+[data-theme="black"] .db-pill.ok { box-shadow: 0 0 8px rgba(0,255,136,.5); }
+[data-theme="black"] .chofer-hero { box-shadow: var(--hero-shadow); }
+[data-theme="black"] .manifest-big { box-shadow: var(--neon-glow); }
+
+/* ── TEMA WHITE NEON ── */
+[data-theme="white"] {
+  --bg: #f8f8f8;
+  --surface: #ffffff;
+  --surface2: #f0f0f0;
+  --surface3: #e8e8e8;
+  --accent: #cc00ff;
+  --accent-light: #f8e6ff;
+  --accent2: #ff6600;
+  --accent2-light: #fff0e6;
+  --success: #00bb55;
+  --success-light: #e6fff2;
+  --danger: #ff0044;
+  --danger-light: #ffe6ec;
+  --warn: #ff8800;
+  --warn-light: #fff4e6;
+  --text: #111111;
+  --text2: #555555;
+  --text3: #aaaaaa;
+  --border: #cc00ff44;
+  --border2: #cc00ff22;
+  --shadow: 0 0 12px rgba(204,0,255,.10), 0 2px 8px rgba(0,0,0,.06);
+  --shadow-lg: 0 0 32px rgba(204,0,255,.18), 0 8px 40px rgba(0,0,0,.10);
+  --hero-grad: linear-gradient(140deg,#cc00ff 0%,#8800cc 100%);
+  --hero-shadow: 0 0 32px rgba(204,0,255,.45);
+  --neon-glow-w: 0 0 8px rgba(204,0,255,.8), 0 0 24px rgba(204,0,255,.35);
+  --neon-glow-w2: 0 0 8px rgba(255,102,0,.8), 0 0 24px rgba(255,102,0,.35);
+}
+[data-theme="white"] .logo { text-shadow: var(--neon-glow-w); }
+[data-theme="white"] .logo span { text-shadow: var(--neon-glow-w2); }
+[data-theme="white"] .stat-n { text-shadow: var(--neon-glow-w); }
+[data-theme="white"] .cnt-badge { box-shadow: var(--neon-glow-w); }
+[data-theme="white"] .tab.active { text-shadow: 0 0 8px var(--accent); }
+[data-theme="white"] .btn-primary { box-shadow: var(--neon-glow-w); }
+[data-theme="white"] .btn-green { box-shadow: 0 0 8px rgba(0,187,85,.6), 0 0 24px rgba(0,187,85,.25); }
+[data-theme="white"] header { border-bottom-color: #cc00ff44; box-shadow: 0 0 20px rgba(204,0,255,.10); }
+[data-theme="white"] .card { border-color: #cc00ff22; }
+[data-theme="white"] .flash.ok { text-shadow: 0 0 8px rgba(0,187,85,.8); box-shadow: 0 0 12px rgba(0,187,85,.4); }
+[data-theme="white"] .db-pill.ok { box-shadow: 0 0 8px rgba(0,187,85,.5); }
+[data-theme="white"] .chofer-hero { box-shadow: var(--hero-shadow); }
+[data-theme="white"] .manifest-big { box-shadow: var(--neon-glow-w); }
+
+/* ════════════════════════════════════════
+   BASE
+════════════════════════════════════════ */
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow-x:hidden}
+body{
+  background:var(--bg);color:var(--text);font-family:var(--font);
+  min-height:100vh;font-size:16px;line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ════════════════════════════════════════
+   HEADER
+════════════════════════════════════════ */
+header{
+  background:var(--surface);
+  border-bottom:1.5px solid var(--border);
+  padding:0 18px;height:60px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:200;
+  box-shadow:0 1px 0 var(--border),var(--shadow);
+}
+.logo{
+  font-size:1.25rem;font-weight:800;color:var(--accent);letter-spacing:-0.5px;
+  display:flex;align-items:center;gap:7px;
+}
+.logo span{color:var(--accent2)}
+.logo-ico{font-size:1.3rem;line-height:1}
+.logo .eico .si{color:var(--accent)}
+.hdr-right{display:flex;align-items:center;gap:8px}
+
+/* Tema picker */
+#theme-btns{display:flex;gap:5px;align-items:center;margin-right:4px}
+#theme-btns button{
+  width:22px;height:22px;border-radius:50%;cursor:pointer;padding:0;
+  transition:transform .15s,box-shadow .15s;border:2px solid transparent;
+}
+#theme-btns button:active{transform:scale(.82)}
+
+.db-pill{
+  font-size:0.72rem;font-weight:700;padding:5px 11px;border-radius:20px;
+  display:flex;align-items:center;gap:4px;transition:all .3s;white-space:nowrap;
+}
+.db-pill.ok{background:var(--success-light);color:var(--success);border:1.5px solid var(--success)}
+.db-pill.err{background:var(--danger-light);color:var(--danger);border:1.5px solid var(--danger)}
+.db-pill.saving{background:var(--warn-light);color:var(--warn);border:1.5px solid var(--warn)}
+.cnt-badge{
+  background:var(--accent);color:#fff;font-size:0.72rem;font-weight:800;
+  padding:4px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0;
+}
+
+/* ════════════════════════════════════════
+   TABS — barra inferior estilo app
+════════════════════════════════════════ */
+.tabs{
+  display:flex;background:var(--surface);
+  border-bottom:1.5px solid var(--border);
+  position:sticky;top:60px;z-index:190;
+}
+.tab{
+  flex:1;padding:11px 4px 10px;text-align:center;cursor:pointer;
+  color:var(--text3);border-bottom:3px solid transparent;
+  transition:all .18s;display:flex;flex-direction:column;
+  align-items:center;gap:3px;
+  font-size:0.68rem;font-weight:700;letter-spacing:.4px;text-transform:uppercase;
+}
+.tab .tab-ico{font-size:1.4rem;line-height:1}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent);background:var(--accent-light)}
+.panel{display:none;padding:18px 16px 96px}.panel.active{display:block}
+
+/* ════════════════════════════════════════
+   SECTION LABEL
+════════════════════════════════════════ */
+.sec-label{
+  font-size:0.67rem;font-weight:800;color:var(--text2);letter-spacing:1.5px;
+  text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:6px;
+}
+
+/* ════════════════════════════════════════
+   CARDS
+════════════════════════════════════════ */
+.card{
+  background:var(--surface);border-radius:var(--r);border:1px solid var(--border);
+  padding:18px;margin-bottom:14px;box-shadow:var(--shadow);
+}
+.card-title{
+  font-size:0.7rem;font-weight:800;color:var(--text2);letter-spacing:1.5px;
+  text-transform:uppercase;margin-bottom:14px;padding-bottom:12px;
+  border-bottom:1px solid var(--border2);display:flex;align-items:center;gap:7px;
+}
+
+/* ════════════════════════════════════════
+   CHOFER HERO
+════════════════════════════════════════ */
+.chofer-hero{
+  background:var(--hero-grad);border-radius:var(--r);
+  padding:20px 18px;margin-bottom:16px;
+  color:#fff;box-shadow:var(--hero-shadow);
+  position:relative;overflow:hidden;
+}
+.chofer-hero::after{
+  content:'';position:absolute;top:-40px;right:-30px;
+  width:160px;height:160px;border-radius:50%;
+  background:rgba(255,255,255,.06);pointer-events:none;
+}
+.chofer-hero-label{
+  font-size:0.67rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  opacity:.75;margin-bottom:12px;display:flex;align-items:center;gap:5px;
+}
+.chofer-hero-empty{font-size:1.05rem;font-weight:700;opacity:.92;margin-bottom:14px}
+.chofer-hero-active{display:flex;align-items:center;gap:16px}
+.ch-av{
+  width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,.22);
+  font-size:1.5rem;font-weight:800;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;border:2px solid rgba(255,255,255,.35);
+}
+.ch-nm{
+  font-size:1.15rem;font-weight:800;flex:1;min-width:0;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;letter-spacing:-.3px;
+}
+.ch-sb{font-size:0.8rem;opacity:.82;margin-top:4px;font-weight:500}
+.btn-change{
+  background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.35);
+  border-radius:22px;color:#fff;font-family:var(--font);font-size:0.75rem;
+  font-weight:700;padding:9px 16px;cursor:pointer;white-space:nowrap;
+  transition:all .15s;position:relative;z-index:10;pointer-events:auto;
+  touch-action:manipulation;
+}
+.btn-change:active{background:rgba(255,255,255,.35)}
+
+/* ════════════════════════════════════════
+   MODAL (bottom sheet)
+════════════════════════════════════════ */
+.modal-bg{
+  display:none;position:fixed;inset:0;background:rgba(8,12,24,.72);
+  z-index:500;align-items:flex-end;justify-content:center;
+  backdrop-filter:blur(8px);
+}
+.modal-bg.show{display:flex;animation:fdIn .22s ease}
+@keyframes fdIn{from{opacity:0}to{opacity:1}}
+.modal{
+  background:var(--surface);border-radius:26px 26px 0 0;
+  padding:8px 18px 40px;width:100%;max-width:520px;
+  border-top:3px solid var(--accent);max-height:84vh;overflow-y:auto;
+  box-shadow:0 -16px 56px rgba(0,0,0,.22);
+  animation:slideUp .25s cubic-bezier(.22,1,.36,1);
+}
+@keyframes slideUp{from{transform:translateY(40px);opacity:.5}to{transform:translateY(0);opacity:1}}
+.modal-handle{width:46px;height:4px;background:var(--border2);border-radius:4px;margin:14px auto 20px}
+.modal-title{font-size:1.05rem;font-weight:800;color:var(--text);margin-bottom:18px;letter-spacing:-.3px}
+
+/* Chofer options en modal */
+.ch-opt{
+  display:flex;align-items:center;gap:14px;padding:16px 14px;border-radius:16px;
+  background:var(--surface2);border:1px solid var(--border2);cursor:pointer;
+  margin-bottom:10px;transition:all .15s;user-select:none;
+}
+.ch-opt:active{border-color:var(--accent);background:var(--accent-light);transform:scale(.98)}
+.ch-opt-av{
+  width:46px;height:46px;border-radius:50%;background:var(--hero-grad);
+  color:#fff;font-size:1rem;font-weight:800;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.ch-opt-name{font-size:0.98rem;font-weight:700;color:var(--text)}
+.ch-opt-sub{font-size:0.72rem;color:var(--text2);margin-top:2px}
+.ch-opt-count{
+  margin-left:auto;background:var(--accent);color:#fff;
+  font-size:0.72rem;font-weight:700;padding:5px 11px;border-radius:20px;flex-shrink:0;
+}
+
+/* ════════════════════════════════════════
+   CÁMARA
+════════════════════════════════════════ */
+.cam-wrap{
+  background:#000;border-radius:var(--r);overflow:hidden;
+  border:1px solid var(--border);margin-bottom:12px;
+  min-height:240px;position:relative;
+  box-shadow:0 4px 28px rgba(0,0,0,.28);
+}
+#reader{width:100%}
+#reader__dashboard_section_swaplink,#reader__filescan_input,
+#html5-qrcode-button-camera-stop,#html5-qrcode-button-camera-start,
+#reader__dashboard_section_csr button,#reader__status_span,
+#reader__header_message,#reader__dashboard{display:none!important}
+#reader__scan_region{border-radius:var(--r);overflow:hidden}
+#reader__scan_region img{display:none!important}
+.cam-badge{
+  position:absolute;top:11px;left:50%;transform:translateX(-50%);
+  background:rgba(0,0,0,.72);color:#fff;font-size:0.68rem;font-weight:700;
+  padding:6px 16px;border-radius:20px;letter-spacing:.8px;
+  pointer-events:none;white-space:nowrap;z-index:10;
+  border:1px solid rgba(255,255,255,.15);backdrop-filter:blur(4px);
+}
+.cam-badge.live{background:rgba(22,163,74,.88)}
+
+/* ════════════════════════════════════════
+   CAM SELECTOR
+════════════════════════════════════════ */
+#cam-selector-wrap{
+  display:none;margin-bottom:12px;
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);
+  padding:12px 14px;
+}
+#cam-selector-wrap .lbl{
+  font-size:0.67rem;font-weight:800;letter-spacing:.5px;
+  color:var(--text2);text-transform:uppercase;margin-bottom:6px;
+}
+
+/* ════════════════════════════════════════
+   BOTONES
+════════════════════════════════════════ */
+.cam-controls{display:flex;gap:10px;margin-bottom:12px}
+.btn{
+  flex:1;padding:15px 12px;border:none;border-radius:14px;
+  font-family:var(--font);font-size:0.85rem;font-weight:700;cursor:pointer;
+  letter-spacing:.2px;transition:all .15s;
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  touch-action:manipulation;min-height:50px;
+}
+.btn:active{transform:scale(.94);opacity:.9}
+.btn-primary{background:var(--accent);color:#fff;box-shadow:0 4px 16px color-mix(in srgb,var(--accent) 40%,transparent)}
+.btn-red{background:var(--danger);color:#fff;box-shadow:0 4px 16px rgba(220,38,38,.3)}
+.btn-secondary{background:var(--surface2);color:var(--text);border:1.5px solid var(--border)}
+.btn-orange{background:var(--accent2);color:#fff}
+.btn-green{background:var(--success);color:#fff;box-shadow:0 4px 16px rgba(22,163,74,.3)}
+.btn-icon{font-size:1.2rem;line-height:1}
+/* Botón cuadrado icono */
+.btn-sq{flex:0 0 52px;padding:0;font-size:1.3rem;border-radius:14px}
+
+/* ════════════════════════════════════════
+   FLASH
+════════════════════════════════════════ */
+.flash{
+  margin-bottom:12px;padding:15px 18px;border-radius:14px;font-size:1rem;
+  text-align:center;display:none;font-weight:700;font-family:var(--mono);letter-spacing:.3px;
+}
+.flash.show{display:block;animation:fIn .16s}
+.flash.ok{background:var(--success-light);border:1.5px solid var(--success);color:var(--success)}
+.flash.dup{background:var(--danger-light);border:1.5px solid var(--danger);color:var(--danger)}
+@keyframes fIn{from{transform:scale(.96);opacity:0}to{transform:scale(1);opacity:1}}
+
+/* ════════════════════════════════════════
+   INPUTS
+════════════════════════════════════════ */
+.manual-row{display:flex;gap:10px;margin-bottom:14px}
+.input-text{
+  background:var(--surface);border:1.5px solid var(--border);border-radius:14px;
+  color:var(--text);font-family:var(--font);font-size:0.96rem;padding:14px 16px;
+  outline:none;width:100%;transition:border .15s,box-shadow .15s;
+}
+.input-text:focus{
+  border-color:var(--accent);
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 18%,transparent);
+}
+select.input-text{cursor:pointer;-webkit-appearance:none}
+textarea.input-text{resize:vertical}
+
+/* ════════════════════════════════════════
+   STATS ROW
+════════════════════════════════════════ */
+.stats-row{display:flex;gap:10px;margin-bottom:16px}
+.stat{
+  flex:1;background:var(--surface);border:1px solid var(--border);
+  border-radius:16px;padding:14px 8px 12px;text-align:center;
+  box-shadow:var(--shadow);
+}
+.stat-n{
+  font-size:2rem;font-weight:800;color:var(--accent);
+  line-height:1;font-family:var(--mono);
+}
+.stat-l{
+  font-size:0.62rem;color:var(--text2);font-weight:700;
+  letter-spacing:.8px;text-transform:uppercase;margin-top:5px;
+}
+
+/* ════════════════════════════════════════
+   RECIENTES
+════════════════════════════════════════ */
+.label-sm{
+  font-size:0.67rem;color:var(--text2);font-weight:700;
+  letter-spacing:1.5px;text-transform:uppercase;
+  margin-bottom:10px;display:flex;align-items:center;gap:6px;
+}
+.recent-item{
+  display:flex;align-items:center;gap:14px;padding:13px 15px;
+  background:var(--surface);border-radius:14px;margin-bottom:8px;
+  border:1px solid var(--border2);border-left:4px solid var(--success);
+  box-shadow:var(--shadow);
+}
+@keyframes sIn{from{transform:translateX(-8px);opacity:0}to{transform:translateX(0);opacity:1}}
+.recent-item{animation:sIn .18s}
+.recent-code{
+  font-size:0.88rem;font-weight:700;flex:1;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  font-family:var(--mono);
+}
+.recent-time{font-size:0.67rem;color:var(--text2);flex-shrink:0}
+.recent-ch{
+  font-size:0.67rem;color:var(--accent);font-weight:700;flex-shrink:0;
+  background:var(--accent-light);padding:3px 9px;border-radius:10px;
+}
+
+/* ════════════════════════════════════════
+   TABLA
+════════════════════════════════════════ */
+.data-controls{display:flex;gap:10px;margin-bottom:12px}
+.ch-filter{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px}
+.ch-pill{
+  font-size:0.72rem;padding:7px 15px;border-radius:20px;cursor:pointer;
+  font-weight:700;background:var(--surface);border:1.5px solid var(--border2);
+  color:var(--text2);transition:all .15s;
+}
+.ch-pill.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.table-wrap{
+  overflow-x:auto;border-radius:14px;border:1px solid var(--border);
+  max-height:calc(100vh - 260px);overflow-y:auto;box-shadow:var(--shadow);
+}
+table{width:100%;border-collapse:collapse;font-size:0.82rem;min-width:360px}
+thead{background:var(--surface2);position:sticky;top:0;z-index:10}
+th{
+  padding:13px 12px;text-align:left;color:var(--accent);
+  font-size:0.67rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;
+  border-bottom:1.5px solid var(--border);cursor:pointer;user-select:none;white-space:nowrap;
+}
+td{
+  padding:11px 12px;border-bottom:1px solid var(--border2);
+  max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text);
+}
+tr:hover td{background:var(--accent-light)}
+.del-btn{
+  background:none;border:none;color:var(--danger);cursor:pointer;
+  font-size:1.15rem;padding:5px 9px;border-radius:9px;transition:background .15s;
+}
+.del-btn:active{background:var(--danger-light)}
+.empty-state{text-align:center;padding:52px 20px;color:var(--text2);font-size:0.95rem}
+
+/* ════════════════════════════════════════
+   CIERRE DE TURNO / HISTORIAL
+════════════════════════════════════════ */
+.close-shift-btn{
+  width:100%;padding:18px;border:none;border-radius:var(--r);
+  background:linear-gradient(135deg,var(--danger) 0%,#b91c1c 100%);
+  color:#fff;font-family:var(--font);font-size:1rem;font-weight:800;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;
+  letter-spacing:.2px;transition:all .15s;margin-bottom:14px;
+  box-shadow:0 4px 20px rgba(220,38,38,.35);
+}
+.close-shift-btn:active{transform:scale(.97);opacity:.92}
+.close-shift-ico{font-size:1.5rem;line-height:1;display:flex;align-items:center}
+[data-icons] .close-shift-ico .si svg{width:28px;height:28px}
+
+.session-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
+  padding:16px;margin-bottom:10px;box-shadow:var(--shadow);
+  display:flex;align-items:center;gap:14px;
+}
+.session-card-ico{font-size:1.8rem;line-height:1;flex-shrink:0}
+.session-card-info{flex:1;min-width:0}
+.session-card-date{font-size:0.95rem;font-weight:800;color:var(--text);letter-spacing:-.2px}
+.session-card-meta{font-size:0.7rem;color:var(--text2);margin-top:3px;font-weight:600}
+.session-card-count{
+  background:var(--accent-light);color:var(--accent);
+  font-size:0.75rem;font-weight:800;padding:5px 12px;border-radius:20px;flex-shrink:0;
+}
+.session-card-actions{display:flex;gap:7px;margin-top:10px;flex-wrap:wrap}
+.session-card-actions .btn{flex:1;min-width:0;padding:9px 10px;font-size:0.72rem}
+
+/* Modal cierre de turno */
+.shift-modal-overlay{
+  display:none;position:fixed;inset:0;background:rgba(8,12,24,.80);
+  z-index:600;align-items:center;justify-content:center;
+  backdrop-filter:blur(10px);padding:20px;
+}
+.shift-modal-overlay.show{display:flex;animation:fdIn .22s ease}
+.shift-modal{
+  background:var(--surface);border-radius:var(--r);
+  padding:24px 20px 28px;width:100%;max-width:460px;
+  border:2px solid var(--danger);
+  box-shadow:0 0 40px rgba(220,38,38,.25);
+  animation:slideUp .25s cubic-bezier(.22,1,.36,1);
+}
+.shift-modal-title{font-size:1.15rem;font-weight:800;color:var(--text);margin-bottom:6px;letter-spacing:-.3px}
+.shift-modal-sub{font-size:0.78rem;color:var(--text2);margin-bottom:18px;line-height:1.5}
+.shift-summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}
+.shift-sum-box{background:var(--surface2);border-radius:var(--r-sm);padding:14px 12px;text-align:center}
+.shift-sum-n{font-size:1.8rem;font-weight:800;color:var(--accent);font-family:var(--mono);line-height:1}
+.shift-sum-l{font-size:0.62rem;color:var(--text2);font-weight:700;letter-spacing:.8px;text-transform:uppercase;margin-top:4px}
+.shift-chofer-list{max-height:180px;overflow-y:auto;margin-bottom:16px}
+.shift-chofer-row{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:var(--surface2);border-radius:var(--r-sm);margin-bottom:6px}
+.shift-chofer-name{font-size:0.88rem;font-weight:700;color:var(--text)}
+.shift-chofer-cnt{font-size:0.75rem;font-weight:800;color:var(--accent);background:var(--accent-light);padding:3px 10px;border-radius:12px}
+.shift-modal-actions{display:flex;flex-direction:column;gap:8px}
+.shift-modal-actions .btn{width:100%;min-height:48px;font-size:0.88rem}
+
+/* ════════════════════════════════════════
+   EXPORT
+════════════════════════════════════════ */
+.exp-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.exp-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
+  padding:22px 12px;text-align:center;cursor:pointer;
+  transition:all .15s;box-shadow:var(--shadow);
+}
+.exp-card:active{border-color:var(--accent);background:var(--accent-light);transform:scale(.95)}
+.exp-icon{font-size:2.1rem;margin-bottom:8px;line-height:1;display:flex;justify-content:center}
+[data-icons] .exp-icon .ei{font-size:2.1rem}
+[data-icons] .exp-icon .si svg{width:34px;height:34px}
+.exp-name{font-size:0.85rem;font-weight:800;color:var(--text)}
+.exp-desc{font-size:0.67rem;color:var(--text2);margin-top:4px}
+.manifest-big{
+  background:var(--hero-grad);color:#fff;
+  border-radius:var(--r);padding:20px 18px;margin-bottom:16px;
+  display:flex;align-items:center;gap:16px;cursor:pointer;
+  box-shadow:var(--hero-shadow);transition:all .15s;
+  border:none;width:100%;font-family:var(--font);text-align:left;
+}
+.manifest-big:active{transform:scale(.97);opacity:.92}
+.manifest-big-icon{font-size:2.3rem;flex-shrink:0;line-height:1;display:flex;align-items:center}
+[data-icons] .manifest-big-icon .si svg{width:38px;height:38px}
+.manifest-big-text{flex:1}
+.manifest-big-title{font-size:1.08rem;font-weight:800;margin-bottom:4px;letter-spacing:-.3px}
+.manifest-big-sub{font-size:0.78rem;opacity:.88}
+
+/* ════════════════════════════════════════
+   SETTINGS
+════════════════════════════════════════ */
+.sec{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r);padding:18px;margin-bottom:14px;
+  box-shadow:var(--shadow);
+}
+.sec-title{
+  font-size:0.7rem;font-weight:800;color:var(--accent);letter-spacing:1.5px;
+  text-transform:uppercase;margin-bottom:16px;padding-bottom:12px;
+  border-bottom:1px solid var(--border2);display:flex;align-items:center;gap:7px;
+}
+.srow{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 0;border-bottom:1px solid var(--border2);gap:14px;
+}
+.srow:last-child{border-bottom:none;padding-bottom:0}
+.srow:first-of-type{padding-top:0}
+.slabel{font-size:0.93rem;font-weight:600;color:var(--text);line-height:1.3}
+.shint{font-size:0.7rem;color:var(--text2);margin-top:4px;line-height:1.4}
+.toggle{position:relative;width:50px;height:28px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0;position:absolute}
+.tsl{
+  position:absolute;inset:0;background:var(--border2);
+  border-radius:28px;cursor:pointer;transition:.28s;
+}
+.tsl::before{
+  content:'';position:absolute;width:22px;height:22px;
+  left:3px;top:3px;background:#fff;border-radius:50%;
+  transition:.28s;box-shadow:0 1px 6px rgba(0,0,0,.25);
+}
+.toggle input:checked+.tsl{background:var(--accent)}
+.toggle input:checked+.tsl::before{transform:translateX(22px)}
+.col-list,.ch-list{display:flex;flex-direction:column;gap:9px;max-height:290px;overflow-y:auto}
+.col-item{display:flex;align-items:center;gap:8px}
+.col-item .input-text{flex:1;padding:10px 13px;font-size:0.88rem}
+
+/* ════════════════════════════════════════
+   ALERTS
+════════════════════════════════════════ */
+.abox{border-radius:13px;padding:13px 16px;margin-bottom:12px;font-size:0.83rem;line-height:1.65;font-weight:600}
+.abox-warn{background:var(--warn-light);border:1.5px solid var(--warn);color:var(--warn)}
+.abox-ok{background:var(--success-light);border:1.5px solid var(--success);color:var(--success)}
+.abox-info{background:var(--accent-light);border:1.5px solid var(--accent);color:var(--accent)}
+.abox-err{background:var(--danger-light);border:1.5px solid var(--danger);color:var(--danger)}
+
+/* ════════════════════════════════════════
+   DB BANNER
+════════════════════════════════════════ */
+#db-banner{
+  display:none;background:var(--danger);color:#fff;
+  padding:12px 18px;font-size:0.83rem;text-align:center;
+  line-height:1.5;font-weight:700;
+}
+
+/* ════════════════════════════════════════
+   TOAST
+════════════════════════════════════════ */
+#toast{
+  position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(90px);
+  background:var(--text);color:var(--surface);padding:13px 26px;border-radius:32px;
+  font-size:0.88rem;font-weight:700;z-index:9999;
+  transition:transform .3s cubic-bezier(.175,.885,.32,1.275);
+  white-space:nowrap;pointer-events:none;
+  box-shadow:0 6px 32px rgba(0,0,0,.32);letter-spacing:.2px;
+}
+#toast.show{transform:translateX(-50%) translateY(0)}
+
+/* ════════════════════════════════════════
+   iMile + ZONA ROW
+════════════════════════════════════════ */
+.mode-row{display:flex;gap:10px;margin-bottom:12px;align-items:stretch}
+.mode-card{
+  flex:1;background:var(--surface);border:1.5px solid var(--border);border-radius:14px;
+  padding:12px 14px;cursor:pointer;display:flex;align-items:center;gap:10px;transition:all .2s;
+}
+.mode-card:active{opacity:.85}
+.mode-card-icon{font-size:1.45rem;line-height:1;flex-shrink:0}
+.mode-card-label{font-size:0.75rem;font-weight:800;letter-spacing:.3px;color:var(--text)}
+.mode-card-sub{font-size:0.65rem;color:var(--text2);margin-top:3px}
+.mode-dot{width:12px;height:12px;border-radius:50%;background:var(--border);flex-shrink:0;transition:background .2s}
+
+@media(min-width:600px){body{max-width:640px;margin:0 auto}}
+
+/* ════ MEJORAS UX v2 ════ */
+
+/* 1. Botón INICIAR grande — su propia fila */
+.cam-controls-aux{display:flex;gap:10px;margin-bottom:10px}
+.btn-cam-main{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  width:100%;padding:18px;border:none;border-radius:16px;
+  font-family:var(--font);font-size:1.05rem;font-weight:800;cursor:pointer;
+  letter-spacing:.3px;transition:all .15s;touch-action:manipulation;
+  box-shadow:0 6px 20px color-mix(in srgb,var(--accent) 40%,transparent);
+  margin-bottom:10px;
+}
+.btn-cam-main.start{background:var(--accent);color:#fff;}
+.btn-cam-main.stop{background:var(--danger);color:#fff;box-shadow:0 6px 20px rgba(220,38,38,.35);}
+.btn-cam-main:active{transform:scale(.97);opacity:.92}
+.btn-cam-main .btn-main-ico{font-size:1.5rem;line-height:1}
+
+/* 2. Flash grande */
+.flash{
+  margin-bottom:12px;padding:20px 18px;border-radius:16px;
+  font-size:1.25rem;text-align:center;display:none;
+  font-weight:800;font-family:var(--mono);letter-spacing:.3px;
+  line-height:1.3;
+}
+.flash-time{
+  display:block;font-size:0.65rem;font-weight:600;
+  opacity:.7;margin-top:4px;font-family:var(--font);letter-spacing:.5px;
+}
+
+/* 3. Chip de chofer activo en header */
+.hdr-chofer-chip{
+  display:none;align-items:center;gap:6px;
+  background:var(--accent-light);border:1.5px solid var(--accent);
+  border-radius:20px;padding:4px 10px 4px 6px;
+  font-size:0.72rem;font-weight:700;color:var(--accent);
+  max-width:120px;overflow:hidden;cursor:pointer;transition:all .2s;
+}
+.hdr-chofer-chip.visible{display:flex}
+.hdr-chofer-chip .chip-av{
+  width:20px;height:20px;border-radius:50%;
+  background:var(--accent);color:#fff;font-size:0.6rem;font-weight:800;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.hdr-chofer-chip .chip-nm{
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+
+/* 4. Badge contador en tab */
+.tab-badge{
+  display:inline-flex;align-items:center;justify-content:center;
+  background:var(--accent);color:#fff;font-size:0.55rem;font-weight:800;
+  min-width:16px;height:16px;border-radius:10px;padding:0 4px;
+  margin-left:3px;line-height:1;
+}
+.tab.active .tab-badge{background:#fff;color:var(--accent)}
+
+/* 5. Skeleton loader */
+@keyframes shimmer{0%{background-position:-400px 0}100%{background-position:400px 0}}
+.skel-row{
+  height:44px;border-radius:10px;margin-bottom:8px;
+  background:linear-gradient(90deg,var(--surface2) 25%,var(--surface3) 50%,var(--surface2) 75%);
+  background-size:800px 100%;animation:shimmer 1.4s infinite;
+}
+.skel-row:nth-child(2){opacity:.7}
+.skel-row:nth-child(3){opacity:.5}
+.skel-row:nth-child(4){opacity:.3}
+
+/* 6. Estado confirmado en exp-card */
+.exp-card.exported{
+  border-color:var(--success)!important;
+  background:var(--success-light)!important;
+}
+.exp-card.exported .exp-icon-wrap::after{content:'✓';font-size:1rem}
+
+/* 7. Buscador en modal choferes */
+#modal-search-wrap{
+  position:sticky;top:0;z-index:10;
+  background:var(--surface);padding-bottom:10px;margin-bottom:2px;
+}
+
+
+/* ════ DEBUG CONSOLE (inline en Config) ════ */
+#dbg-panel{display:none;background:#0f172a;border-radius:var(--r-sm);border:1.5px solid #334155;max-height:52vh;flex-direction:column;font-family:var(--mono);font-size:0.68rem;overflow:hidden}
+#dbg-panel.dbg-open{display:flex}
+#dbg-header{display:flex;align-items:center;gap:8px;padding:8px 14px;background:#1e293b;border-bottom:1px solid #334155;flex-shrink:0}
+#dbg-title{color:#7dd3fc;font-weight:800;font-size:0.72rem;letter-spacing:1px;flex:1}
+#dbg-clear{background:#334155;border:none;color:#94a3b8;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:0.65rem;font-family:var(--mono)}
+#dbg-close{background:none;border:none;color:#f87171;font-size:1.1rem;cursor:pointer;padding:2px 6px}
+#dbg-list{overflow-y:auto;flex:1;padding:6px 0}
+.dbg-row{display:flex;gap:8px;padding:4px 12px;border-bottom:1px solid #1e293b;line-height:1.4}
+.dbg-row:hover{background:#1e293b}
+/* DIAG panel inline en Config */
+#diag-panel{display:none;background:#111;color:#0f0;font:11px monospace;padding:10px;border-radius:var(--r-sm);max-height:52vh;overflow-y:auto;white-space:pre-wrap;word-break:break-all;border:1.5px solid #0f0;margin-top:8px}
+#diag-panel.open{display:block}
+.dbg-t{color:#475569;flex-shrink:0;font-size:0.62rem;margin-top:1px}
+.dbg-m{color:#e2e8f0;word-break:break-all}
+.dbg-warn .dbg-m{color:#fbbf24}
+.dbg-error .dbg-m{color:#f87171;font-weight:700}
+
+.theme-opt-btn{
+  display:flex;align-items:center;gap:8px;width:100%;padding:7px 10px;
+  border:none;background:none;color:var(--text);font-family:var(--font);
+  font-size:0.8rem;font-weight:700;cursor:pointer;border-radius:8px;
+  transition:background .15s;text-align:left;
+}
+.theme-opt-btn:hover,.theme-opt-btn:active{background:var(--surface2)}
+.theme-opt-btn.active{background:var(--accent-light);color:var(--accent)}
+
+/* ═══════════════════════════════════════
+   ICON THEME SYSTEM
+═══════════════════════════════════════ */
+/* Every .eico span has two children: .ei (emoji) and .si (svg) */
+.eico .ei { display:inline-flex;align-items:center }
+.eico .si { display:none;align-items:center;color:inherit }
+/* Lucide mode: show SVG outline */
+[data-icons="lucide"] .eico .ei { display:none }
+[data-icons="lucide"] .eico .si { display:inline-flex }
+/* iOS mode: show SVG with heavier stroke */
+[data-icons="ios"] .eico .ei { display:none }
+[data-icons="ios"] .eico .si { display:inline-flex }
+[data-icons="ios"] .eico .si svg { stroke-width:2.8 }
+
+/* Icon theme selector row in picker menu */
+.icon-theme-sep{border-top:1px solid var(--border2);margin:6px 0 4px}
+.icon-theme-row{display:flex;gap:4px;padding:0 2px 2px}
+.ithm-btn{
+  flex:1;border:1.5px solid var(--border2);border-radius:8px;
+  background:var(--surface2);color:var(--text2);font-family:var(--font);
+  font-size:0.65rem;font-weight:800;padding:6px 3px 5px;cursor:pointer;
+  letter-spacing:.2px;transition:all .15s;
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  line-height:1;
+}
+.ithm-btn:hover{background:var(--surface3)}
+.ithm-btn.active{background:var(--accent-light);color:var(--accent);border-color:var(--accent)}
+.ithm-btn svg{width:13px;height:13px}
+.ithm-btn .ithm-em{font-size:0.85rem;line-height:1}
+
+/* Theme picker button — use CSS vars so it's visible in all themes */
+#theme-picker-btn{
+  color:var(--text2) !important;
+  background:var(--surface2) !important;
+  border-color:var(--border) !important;
+}
+#theme-picker-btn:hover{ background:var(--surface3) !important; color:var(--text) !important; }
+
+/* Tab icons */
+.tab-ico{ line-height:1 }
+.tab .eico{ font-size:1.35rem }
+.tab .eico .si svg{ width:22px;height:22px }
+
+/* ── Header auto-hide cuando cámara activa ── */
+header{transition:transform .3s cubic-bezier(.4,0,.2,1),opacity .3s ease;}
+header.cam-hidden{
+  transform:translateY(-100%);
+  opacity:0;
+  pointer-events:none;
+}
+.tabs{transition:transform .3s cubic-bezier(.4,0,.2,1),opacity .3s ease;}
+.tabs.cam-hidden{
+  transform:translateY(-120%);
+  opacity:0;
+  pointer-events:none;
+  position:fixed;top:0;
+}
+/* Pequeño botón flotante para mostrar el header mientras cámara está ON */
+#hdr-show-btn{
+  display:none;position:fixed;top:0;left:50%;transform:translateX(-50%);
+  z-index:300;background:var(--accent);color:#fff;
+  border:none;border-radius:0 0 12px 12px;
+  padding:3px 18px 5px;font-size:0.65rem;font-weight:800;
+  letter-spacing:.5px;cursor:pointer;opacity:.85;
+  transition:opacity .2s;font-family:var(--font);
+}
+#hdr-show-btn.visible{display:block}
+#hdr-show-btn:active{opacity:1}
+
+/* ════ Selector múltiple de choferes (Excel por chofer) ════ */
+.ch-check-row{
+  display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;
+  background:var(--surface2);border:1px solid var(--border2);cursor:pointer;
+  margin-bottom:8px;transition:all .15s;user-select:none;
+}
+.ch-check-row.checked{border-color:var(--accent);background:var(--accent-light)}
+.ch-check-box{
+  width:22px;height:22px;border-radius:7px;border:2px solid var(--border);
+  flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  font-size:0.8rem;font-weight:900;color:#fff;background:var(--surface);transition:all .15s;
+}
+.ch-check-row.checked .ch-check-box{background:var(--accent);border-color:var(--accent)}
+.ch-check-name{flex:1;font-size:0.9rem;font-weight:700;color:var(--text)}
+.ch-check-count{font-size:0.7rem;font-weight:800;color:var(--text2)}
+
+</style>
+<body>
+
+<div id="db-banner">⚠ Sin base de datos — Los datos NO se guardan al cerrar. ¡Exporta ahora!</div>
+<button id="hdr-show-btn" onclick="revealHeader()">▼ MENÚ</button>
+
+<header>
+  <div class="logo">
+    <span class="eico"><span class="ei">📦</span><span class="si"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></span></span>Escanea<span>Guías</span>
+  </div>
+  <div class="hdr-right">
+    <div style="position:relative;margin-right:4px" id="theme-picker-wrap">
+      <button id="theme-picker-btn" onclick="toggleThemePicker()" title="Cambiar tema"
+        style="width:30px;height:30px;border-radius:8px;cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;transition:all .2s"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg></button>
+      <div id="theme-picker-menu" style="display:none;position:absolute;top:36px;right:0;background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:8px;box-shadow:var(--shadow-lg);z-index:500;white-space:nowrap">
+        <div style="font-size:0.6rem;font-weight:800;letter-spacing:1px;color:var(--text2);padding:2px 6px 6px;text-transform:uppercase">Tema</div>
+        <div style="display:flex;flex-direction:column;gap:4px">
+          <button onclick="setTheme('blue');toggleThemePicker()" class="theme-opt-btn" id="topt-blue">
+            <span style="width:14px;height:14px;border-radius:50%;background:#2563eb;flex-shrink:0;display:inline-block"></span> Azul
+          </button>
+          <button onclick="setTheme('dark');toggleThemePicker()" class="theme-opt-btn" id="topt-dark">
+            <span style="width:14px;height:14px;border-radius:50%;background:#312e81;flex-shrink:0;display:inline-block"></span> Oscuro
+          </button>
+          <button onclick="setTheme('green');toggleThemePicker()" class="theme-opt-btn" id="topt-green">
+            <span style="width:14px;height:14px;border-radius:50%;background:#16a34a;flex-shrink:0;display:inline-block"></span> Verde
+          </button>
+          <button onclick="setTheme('black');toggleThemePicker()" class="theme-opt-btn" id="topt-black">
+            <span style="width:14px;height:14px;border-radius:50%;background:#000;border:1px solid #00ff88;box-shadow:0 0 5px #00ff88;flex-shrink:0;display:inline-block"></span> Black Neon
+          </button>
+          <button onclick="setTheme('white');toggleThemePicker()" class="theme-opt-btn" id="topt-white">
+            <span style="width:14px;height:14px;border-radius:50%;background:#fff;border:1px solid #cc00ff;box-shadow:0 0 5px #cc00ff;flex-shrink:0;display:inline-block"></span> White Neon
+          </button>
+        </div>
+        <div class="icon-theme-sep"></div>
+        <div style="font-size:0.6rem;font-weight:800;letter-spacing:1px;color:var(--text2);padding:2px 6px 4px;text-transform:uppercase">Iconos</div>
+        <div class="icon-theme-row">
+          <button class="ithm-btn active" id="iopt-emoji" onclick="setIconTheme('emoji')">
+            <span class="ithm-em">😀</span>Emoji
+          </button>
+          <button class="ithm-btn" id="iopt-lucide" onclick="setIconTheme('lucide')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/></svg>
+            Lucide
+          </button>
+          <button class="ithm-btn" id="iopt-ios" onclick="setIconTheme('ios')">
+            <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+            iOS SF
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="hdr-chofer-chip" id="hdr-chofer-chip" onclick="openModal()" title="Chofer activo">
+      <div class="chip-av" id="hdr-chip-av">?</div>
+      <span class="chip-nm" id="hdr-chip-nm">—</span>
+    </div>
+    <div class="db-pill ok" id="db-pill"><span class="eico"><span class="ei">💾</span><span class="si"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg></span></span> OK</div>
+    <div class="cnt-badge" id="hdr-cnt">0 guías</div>
+  </div>
+</header>
+
+<div class="tabs">
+  <div class="tab active" data-tab="scanner"><span class="eico"><span class="ei">📷</span><span class="si"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="7" y1="12" x2="17" y2="12"/></svg></span></span>Scan</div>
+  <div class="tab" data-tab="data" id="tab-data"><span class="eico"><span class="ei">📋</span><span class="si"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></span></span>Lista<span class="tab-badge" id="tab-badge-hoy">0</span></div>
+  <div class="tab" data-tab="export"><span class="eico"><span class="ei">💾</span><span class="si"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span></span>Export</div>
+  <div class="tab" data-tab="history"><span class="eico"><span class="ei">🗂</span><span class="si"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span></span>Historial</div>
+  <div class="tab" data-tab="settings"><span class="eico"><span class="ei">⚙️</span><span class="si"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span></span>Config</div>
+</div>
+
+<!-- ══════ SCANNER ══════ -->
+<div id="scanner-panel" class="panel active">
+
+  <div class="chofer-hero" id="chofer-hero">
+    <div class="chofer-hero-label"><span class="eico"><span class="ei">👤</span><span class="si"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span></span> Chofer activo</div>
+    <div id="box-empty">
+      <div class="chofer-hero-empty">⚠ Selecciona un chofer para empezar</div>
+      <button class="btn btn-secondary" onclick="openModal()"
+        style="margin-top:10px;background:rgba(255,255,255,.9);color:var(--accent);border:none;width:100%;font-size:0.8rem">
+        SELECCIONAR CHOFER
+      </button>
+    </div>
+    <div id="box-active" class="chofer-hero-active" style="display:none">
+      <div class="ch-av" id="ch-av">?</div>
+      <div style="flex:1;min-width:0">
+        <div class="ch-nm" id="ch-nm">—</div>
+        <div class="ch-sb" id="ch-sb">0 guías hoy</div>
+      </div>
+      <button class="btn-change" onclick="openModal()">CAMBIAR ▼</button>
+    </div>
+  </div>
+
+  <!-- Modo iMile + Zona -->
+  <div style="display:flex;gap:8px;margin-bottom:8px;align-items:stretch">
+    <div id="imile-badge" onclick="toggleImileMode()" style="flex:1;background:var(--surface);border:2px solid var(--border);border-radius:var(--r-sm);padding:10px 12px;cursor:pointer;display:flex;align-items:center;gap:8px;transition:all .2s">
+      <div style="font-size:1.3rem"><span class="eico"><span class="ei">📦</span><span class="si"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></span></span></div>
+      <div style="flex:1">
+        <div style="font-size:0.7rem;font-weight:800;letter-spacing:.5px" id="imile-label">MODO iMile</div>
+        <div style="font-size:0.6rem;color:var(--text2)" id="imile-sub">Validación OFF</div>
+      </div>
+      <div id="imile-dot" style="width:12px;height:12px;border-radius:50%;background:var(--border);flex-shrink:0"></div>
+    </div>
+    <div style="flex:1;background:var(--surface);border:2px solid var(--border);border-radius:var(--r-sm);padding:8px 10px;display:flex;flex-direction:column;gap:4px">
+      <div style="font-size:0.6rem;font-weight:800;letter-spacing:.5px;color:var(--text2)">ZONA</div>
+      <select id="zona-select" class="input-text" style="padding:4px 8px;font-size:0.72rem;font-weight:700" onchange="onZonaChange()">
+        <option value="HMO">🏙 Hermosillo</option>
+        <option value="FORANEO">🚌 Foráneo</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Selector de cámara manual (para multicámara) -->
+  <div id="cam-selector-wrap">
+    <div class="lbl">📷 CÁMARA ACTIVA</div>
+    <select id="cam-select" class="input-text" style="padding:6px 10px;font-size:0.78rem;font-weight:700" onchange="onCamSelectChange()">
+      <option value="">Detectando cámaras...</option>
+    </select>
+  </div>
+
+  <!-- Cámara -->
+  <div class="cam-wrap">
+    <div id="reader" style="width:100%;min-height:240px;border-radius:inherit;overflow:hidden"></div>
+    <canvas id="reader-canvas" style="display:none"></canvas>
+    <div class="cam-badge" id="cam-badge"><span class="eico"><span class="ei">📵</span><span class="si"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="1" y1="1" x2="23" y2="23"/><path d="M21 21H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h3m3-3h6l2 3h4a2 2 0 0 1 2 2v9.34"/></svg></span></span> Cámara apagada</div>
+    <div id="last4-overlay" style="display:none;position:absolute;bottom:10px;left:0;right:0;text-align:center;pointer-events:none;z-index:10">
+      <div style="display:inline-block;background:rgba(0,0,0,.72);border-radius:10px;padding:6px 18px">
+        <div style="font-size:0.55rem;font-weight:700;color:rgba(255,255,255,.7);letter-spacing:2px">ÚLTIMOS 4</div>
+        <div id="last4-digits" style="font-size:2.2rem;font-weight:900;color:#fff;font-family:var(--mono);letter-spacing:6px;line-height:1.1">—</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Respaldo: captura nativa de foto, SOLO se usa si la cámara en vivo
+       no puede iniciar (p.ej. WebView sin contexto seguro/HTTPS) -->
+  <input type="file" accept="image/*" capture="environment" id="scan-input" style="display:none;" onchange="handlePhotoCapture(event)">
+  <div id="reader-file-scan" style="display:none"></div>
+
+  <button class="btn-cam-main start" id="btn-cam" onclick="toggleCam()">
+    <span class="btn-main-ico">▶</span> INICIAR CÁMARA
+  </button>
+  <div class="cam-controls-aux">
+    <button class="btn btn-secondary" onclick="switchCam()" title="Voltear cámara" style="flex:0 0 52px;font-size:1.3rem;padding:0"><span class="eico"><span class="ei">🔄</span><span class="si"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg></span></span></button>
+    <button class="btn btn-secondary" id="btn-torch" onclick="toggleTorch()" style="flex:0 0 52px;font-size:1.3rem;padding:0"><span class="eico"><span class="ei">🔦</span><span class="si"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6c0 2-2 2-2 4v10a2 2 0 0 1-4 0V10c0-2-2-2-2-4a4 4 0 0 1 8 0z"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="18" y1="6" x2="18.01" y2="6"/><line x1="12" y1="2" x2="12" y2="2"/></svg></span></span></button>
+    <button class="btn btn-secondary" id="btn-cam-search" onclick="startCamSearch()" title="Buscar por cámara" style="flex:0 0 52px;font-size:1.3rem;padding:0"><span class="eico"><span class="ei">🔎</span><span class="si"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span></span></button>
+  </div>
+
+  <div class="flash" id="flash"></div>
+
+  <!-- Manual -->
+  <div class="manual-row">
+    <input class="input-text" id="manual-in" type="text"
+      placeholder="Ingresar número de guía manual..."
+      autocomplete="off" autocorrect="off" spellcheck="false">
+    <button class="btn btn-secondary" style="flex:0 0 auto;padding:11px 18px;font-size:1.1rem" onclick="addManual()">＋</button>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat"><div class="stat-n" id="st-total">0</div><div class="stat-l">Total</div></div>
+    <div class="stat"><div class="stat-n" id="st-hoy" style="color:var(--success)">0</div><div class="stat-l">Hoy</div></div>
+    <div class="stat"><div class="stat-n" id="st-dups" style="color:var(--danger)">0</div><div class="stat-l">Dups</div></div>
+    <div class="stat"><div class="stat-n" id="st-chof" style="color:var(--accent2)">0</div><div class="stat-l">Choferes</div></div>
+  </div>
+
+  <!-- Recientes -->
+  <div class="label-sm" style="margin-top:4px">Últimas guías escaneadas</div>
+  <div id="recents"></div>
+</div>
+
+<!-- ══════ LISTA ══════ -->
+<div id="data-panel" class="panel">
+  <div class="data-controls">
+    <input class="input-text" id="search-in" type="text" placeholder="🔍 Buscar guía, chofer..." oninput="renderTable()">
+    <button class="btn btn-red" style="flex:0 0 auto;padding:11px 14px;font-size:1rem" onclick="clearAll(false)"><span class="eico"><span class="ei">🗑</span><span class="si"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></span></span></button>
+  </div>
+  <div class="ch-filter" id="ch-filter"></div>
+  <div id="tbl-skeleton" style="display:none"><div class="skel-row"></div><div class="skel-row"></div><div class="skel-row"></div><div class="skel-row"></div></div>
+  <div class="table-wrap">
+    <table><thead id="tbl-head"></thead><tbody id="tbl-body"></tbody></table>
+  </div>
+</div>
+
+<!-- ══════ EXPORT ══════ -->
+<div id="export-panel" class="panel">
+  <!-- CIERRE DE TURNO -->
+  <button class="close-shift-btn" onclick="openCloseShiftModal()">
+    <span class="close-shift-ico"><span class="eico"><span class="ei">🔒</span><span class="si"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span></span></span>
+    <div style="text-align:left">
+      <div>CERRAR TURNO</div>
+      <div style="font-size:0.68rem;font-weight:600;opacity:.85">Archivar sesión + resumen WhatsApp + Excel</div>
+    </div>
+    <span style="font-size:1.2rem;opacity:.7;margin-left:auto">›</span>
+  </button>
+  <div class="abox abox-info">
+    <span class="eico"><span class="ei">📦</span><span class="si"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></span></span> <strong id="exp-cnt">0</strong> registros · <strong id="exp-chs">0</strong> choferes listos para exportar
+  </div>
+  <button class="manifest-big" onclick="openManifiestoModal()">
+    <div class="manifest-big-icon"><span class="eico"><span class="ei">🖨️</span><span class="si"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg></span></span></div>
+    <div class="manifest-big-text">
+      <div class="manifest-big-title">Imprimir Manifiesto</div>
+      <div class="manifest-big-sub">Manifiesto con guías, totales y firma del chofer</div>
+    </div>
+    <span style="font-size:1.4rem;opacity:.8">›</span>
+  </button>
+  <div class="exp-grid">
+    <div class="exp-card" onclick="openExcelSelectModal()"><div class="exp-icon"><span class="eico"><span class="ei">📊</span><span class="si"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="12" y1="3" x2="12" y2="21"/></svg></span></span></div><div class="exp-name">Excel</div><div class="exp-desc">Elige los choferes</div></div>
+    <div class="exp-card" onclick="exportCSV()"><div class="exp-icon"><span class="eico"><span class="ei">📄</span><span class="si"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg></span></span></div><div class="exp-name">CSV</div><div class="exp-desc">Compatible universal</div></div>
+    <div class="exp-card" onclick="exportJSON()"><div class="exp-icon"><span class="eico"><span class="ei">💾</span><span class="si"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/><polyline points="9 15 12 18 15 15"/><line x1="12" y1="12" x2="12" y2="18"/></svg></span></span></div><div class="exp-name">Backup JSON</div><div class="exp-desc">Respaldo completo</div></div>
+    <div class="exp-card" onclick="openCopyChoferModal('copy')"><div class="exp-icon"><span class="eico"><span class="ei">📋</span><span class="si"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></span></span></div><div class="exp-name">Copiar Guías</div><div class="exp-desc">Elige el chofer</div></div>
+    <div class="exp-card" onclick="openCopyChoferModal('txt')"><div class="exp-icon"><span class="eico"><span class="ei">📝</span><span class="si"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></span></span></div><div class="exp-name">TXT</div><div class="exp-desc">Elige el chofer</div></div>
+    <div class="exp-card" onclick="exportHTML()"><div class="exp-icon"><span class="eico"><span class="ei">🌐</span><span class="si"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span></span></div><div class="exp-name">HTML</div><div class="exp-desc">Reporte imprimible</div></div>
+    <div class="exp-card" style="background:linear-gradient(135deg,#25d36615,#128c7e10);border-color:#25d36640" onclick="openGuiasWAModal()"><div class="exp-icon"><span class="eico"><span class="ei">💬</span><span class="si"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#25d366" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span></span></div><div class="exp-name">Guías WA</div><div class="exp-desc">Lista por chofer a WhatsApp</div></div>
+    <div class="exp-card" style="grid-column:1/-1;background:linear-gradient(135deg,#7c3aed15,#4f46e510);border-color:#7c3aed40" onclick="generateDash()"><div class="exp-icon"><span class="eico"><span class="ei">📸</span><span class="si"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13" rx="2"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></span></span></div><div class="exp-name">Generar DASH</div><div class="exp-desc">Imagen resumen para compartir</div></div>
+  </div>
+  <div class="card">
+    <div class="card-title"><span class="eico"><span class="ei">📊</span><span class="si"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span></span> Resumen por Chofer</div>
+    <div id="ch-summary"></div>
+  </div>
+</div>
+
+<!-- ══════ HISTORIAL ══════ -->
+<div id="history-panel" class="panel">
+  <div class="abox abox-info" id="hist-summary-box">
+    <span class="eico"><span class="ei">🗂</span><span class="si"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span></span> <strong id="hist-count">0</strong> sesiones archivadas
+  </div>
+  <div id="history-list">
+    <div style="text-align:center;padding:40px 20px;color:var(--text2)">
+      <div style="font-size:2.5rem;margin-bottom:10px"><span class="eico"><span class="ei">🗂</span><span class="si"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg></span></span></div>
+      <div style="font-size:0.9rem;font-weight:700">Sin sesiones archivadas</div>
+      <div style="font-size:0.72rem;margin-top:6px">Cierra tu primer turno desde la pestaña Export para ver el historial aquí.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ MODAL CIERRE DE TURNO ══════ -->
+<div class="shift-modal-overlay" id="shift-modal-overlay">
+  <div class="shift-modal">
+    <div class="shift-modal-title"><span class="eico"><span class="ei">🔒</span><span class="si"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span></span> Cerrar Turno</div>
+    <div class="shift-modal-sub">Se archivará la sesión actual y la app quedará limpia para el siguiente turno.</div>
+    <div class="shift-summary-grid">
+      <div class="shift-sum-box">
+        <div class="shift-sum-n" id="sm-total">0</div>
+        <div class="shift-sum-l">Guías</div>
+      </div>
+      <div class="shift-sum-box">
+        <div class="shift-sum-n" id="sm-chs">0</div>
+        <div class="shift-sum-l">Choferes</div>
+      </div>
+    </div>
+    <div class="shift-chofer-list" id="sm-ch-list"></div>
+    <div class="shift-modal-actions">
+      <button class="btn btn-primary" onclick="doCloseShift('excel')">
+        <span class="eico"><span class="ei">📊</span><span class="si"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="12" y1="3" x2="12" y2="21"/></svg></span></span> Exportar Excel
+      </button>
+      <button class="btn btn-secondary" style="background:linear-gradient(135deg,#25d36622,#128c7e11);border-color:#25d36655" onclick="doCloseShift('wa')">
+        <span class="eico"><span class="ei">💬</span><span class="si"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span></span> Resumen por WhatsApp
+      </button>
+      <button class="btn btn-secondary" onclick="doCloseShift('silent')">
+        <span class="eico"><span class="ei">🗂</span><span class="si"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8v13H3V8"/><rect x="1" y="3" width="22" height="5" rx="1"/><path d="M10 12h4"/></svg></span></span> Solo archivar
+      </button>
+      <button class="btn btn-secondary" style="color:var(--text2)" onclick="closeShiftModal()">✕ CANCELAR</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ SETTINGS ══════ -->
+<div id="settings-panel" class="panel">
+  <div class="sec">
+    <div class="sec-title"><span class="eico"><span class="ei">🔒</span><span class="si"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg></span></span> Base de Datos</div>
+    <div id="db-info"></div>
+    <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+      <button class="btn btn-green" style="flex:1;font-size:0.68rem" onclick="exportBackupJSON()">⬇ Backup JSON</button>
+      <button class="btn btn-secondary" style="flex:1;font-size:0.68rem" onclick="document.getElementById('restore-file').click()">⬆ Restaurar</button>
+      <input type="file" id="restore-file" accept=".json" style="display:none" onchange="importBackup(event)">
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-title"><span class="eico"><span class="ei">📷</span><span class="si"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 0 2-2h3l2-3h8l2 3h3a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></span></span> Escáner</div>
+    <div class="srow">
+      <div><div class="slabel">Evitar duplicados</div><div class="shint">No agrega la misma guía dos veces</div></div>
+      <label class="toggle"><input type="checkbox" id="set-dedup" checked><span class="tsl"></span></label>
+    </div>
+    <div class="srow">
+      <div><div class="slabel">Sonido al escanear</div></div>
+      <label class="toggle"><input type="checkbox" id="set-beep" checked><span class="tsl"></span></label>
+    </div>
+    <div class="srow">
+      <div><div class="slabel">Vibrar al escanear</div></div>
+      <label class="toggle"><input type="checkbox" id="set-vibrate" checked><span class="tsl"></span></label>
+    </div>
+    <div class="srow">
+      <div><div class="slabel">Pausa entre escaneos (ms)</div><div class="shint">800ms recomendado</div></div>
+      <input type="number" class="input-text" id="set-pause" value="800" style="width:80px;flex:0 0 auto;text-align:center" min="300">
+    </div>
+    <div class="srow">
+      <div><div class="slabel">Resolución cámara</div><div class="shint">Alta = más preciso · Baja = más rápido</div></div>
+      <select class="input-text" id="set-res" style="width:110px;flex:0 0 auto;font-size:0.75rem;font-weight:700">
+        <option value="640">Baja 480p</option>
+        <option value="1280" selected>Media 720p ✓</option>
+        <option value="1920">Alta 1080p</option>
+      </select>
+    </div>
+    <div class="srow">
+      <div><div class="slabel">Auto-backup cada N guías</div><div class="shint">0 = desactivado</div></div>
+      <input type="number" class="input-text" id="set-ab" value="0" style="width:80px;flex:0 0 auto;text-align:center" min="0">
+    </div>
+    <div class="srow">
+      <div><div class="slabel">Modo compatibilidad</div><div class="shint">Activa si la cámara no inicia o la imagen sale borrosa</div></div>
+      <label class="toggle"><input type="checkbox" id="set-compat" onchange="saveCompatMode()"><span class="tsl"></span></label>
+    </div>
+    <div class="srow">
+      <div><div class="slabel">Prefijos iMile aprendidos</div><div class="shint" id="imile-learned-hint">0 prefijos nuevos aprendidos</div></div>
+      <button class="btn btn-secondary" style="flex:0 0 auto;padding:9px 13px;font-size:0.7rem" onclick="resetLearnedImile()">Reiniciar</button>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-title"><span class="eico"><span class="ei">👤</span><span class="si"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span></span> Choferes (<span id="ch-count">0</span>)</div>
+    <div class="abox abox-info" style="font-size:0.72rem">💡 Sin límite. Puedes seguir agregando guías a un chofer cuantas veces quieras.</div>
+    <div class="ch-list" id="ch-list"></div>
+    <div class="manual-row" style="margin-top:10px">
+      <input class="input-text" id="new-ch-in" type="text" placeholder="Nombre del chofer...">
+      <button class="btn btn-primary" style="flex:0 0 auto;padding:11px 16px;font-size:1.1rem" onclick="addChofer()">＋</button>
+    </div>
+    <div style="margin-top:12px">
+      <div class="label-sm" style="margin-bottom:6px">Lista completa (uno por línea):</div>
+      <textarea class="input-text" id="bulk-ch" rows="5"
+        placeholder="Juan García&#10;Pedro López&#10;Carlos Ruiz&#10;..." style="resize:vertical;font-size:0.8rem"></textarea>
+      <button class="btn btn-secondary" style="width:100%;margin-top:8px;font-size:0.75rem" onclick="bulkChoferes()">＋ Agregar todos</button>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-title"><span class="eico"><span class="ei">📋</span><span class="si"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg></span></span> Columnas Extra</div>
+    <div class="col-list" id="col-list"></div>
+    <div class="manual-row" style="margin-top:10px">
+      <input class="input-text" id="new-col-in" type="text" placeholder="Ej: ruta, zona, tipo...">
+      <button class="btn btn-primary" style="flex:0 0 auto;padding:11px 16px;font-size:1.1rem" onclick="addCol()">＋</button>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-title"><span class="eico"><span class="ei">🗑</span><span class="si"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></span></span> Zona de Peligro</div>
+    <div class="abox abox-err" style="font-size:0.72rem;margin-bottom:10px">⚠ Estas acciones son irreversibles. Descarga backup primero.</div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-red" style="flex:1;font-size:0.68rem" onclick="clearAll(false)">Borrar registros</button>
+      <button class="btn btn-red" style="flex:1;font-size:0.68rem" onclick="clearAll(true)">Borrar TODO</button>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-title"><span class="eico"><span class="ei">🔍</span><span class="si"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span></span> Diagnóstico de Cámara</div>
+    <div class="abox abox-info" style="font-size:0.72rem;margin-bottom:10px">Útil si la cámara no inicia o hay problemas de permisos.</div>
+    <button class="btn btn-secondary" style="width:100%;font-size:0.78rem" onclick="toggleDiag()">🔍 Ejecutar diagnóstico</button>
+    <div id="diag-panel"></div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-title"><span class="eico"><span class="ei">🐛</span><span class="si"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2l1.88 1.88M14.12 3.88 16 2"/><path d="M9 7.13v-1a3.003 3.003 0 1 1 6 0v1"/><path d="M12 20c-3.3 0-6-2.7-6-6v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3c0 3.3-2.7 6-6 6z"/><path d="M12 20v-9"/><path d="M6.53 9C4.6 8.8 3 7.1 3 5"/><path d="M6 13H2"/><path d="M3 21c0-2.1 1.7-3.9 4-4"/><path d="M17.47 9c1.93-.2 3.53-1.9 3.53-4"/><path d="M18 13h4"/><path d="M21 21c0-2.1-1.7-3.9-4-4"/></svg></span></span> Consola de Debug</div>
+    <div class="abox abox-info" style="font-size:0.72rem;margin-bottom:10px">Registro de eventos internos. Útil para reportar errores.</div>
+    <button class="btn btn-secondary" style="width:100%;font-size:0.78rem" onclick="toggleDebug()">🐛 Abrir consola</button>
+    <div id="dbg-panel" style="margin-top:8px">
+      <div id="dbg-header">
+        <span id="dbg-title">🐛 DEBUG CONSOLE</span>
+        <button id="dbg-clear" onclick="dbg._log=[];dbg._render()">LIMPIAR</button>
+        <button id="dbg-close" onclick="toggleDebug()">✕</button>
+      </div>
+      <div id="dbg-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ MODAL CHOFER ══════ -->
+<div class="modal-bg" id="modal-bg">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">👤 Seleccionar Chofer</div>
+    <div id="modal-search-wrap">
+      <input class="input-text" id="modal-search" type="text" placeholder="🔍 Buscar chofer..." oninput="filterModalChoferes()" autocomplete="off" style="margin-bottom:8px">
+    </div>
+    <div style="font-size:0.62rem;color:var(--text2);font-weight:600;margin-bottom:10px;padding:6px 10px;background:var(--surface2);border-radius:var(--r-sm)">💡 Toca para seleccionar · <strong>Mantén presionado</strong> para editar o borrar</div>
+    <div id="modal-grid"></div>
+    <div style="border-top:1.5px solid var(--border2);margin:12px 0 10px;padding-top:12px">
+      <div class="label-sm" style="margin-bottom:8px">Agregar nuevo chofer</div>
+      <div class="manual-row">
+        <input class="input-text" id="modal-new-ch" type="text" placeholder="Nombre...">
+        <button class="btn btn-primary" style="flex:0 0 auto;padding:11px 16px;font-size:1.1rem" onclick="modalAdd()">＋</button>
+      </div>
+    </div>
+    <button class="btn btn-secondary" style="width:100%;margin-top:4px" onclick="closeModal()">Cancelar</button>
+  </div>
+</div>
+
+<!-- ══════ MODAL COPIAR/TXT POR CHOFER ══════ -->
+<div class="modal-bg" id="copych-modal-bg">
+  <div class="modal" style="border-top-color:#7c3aed">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="copych-title">📋 Copiar Guías</div>
+    <div class="label-sm" style="margin-bottom:8px">¿De qué chofer?</div>
+    <div id="copych-list" style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px"></div>
+    <button class="btn btn-secondary" style="width:100%" onclick="document.getElementById('copych-modal-bg').classList.remove('show')">✕ CANCELAR</button>
+  </div>
+</div>
+
+<!-- ══════ MODAL GUIAS WA ══════ -->
+<div class="modal-bg" id="guiaswa-modal-bg">
+  <div class="modal" style="border-top-color:#25d366">
+    <div class="modal-handle"></div>
+    <div class="modal-title" style="color:#25d366">💬 Guias por WhatsApp</div>
+    <div class="label-sm" style="margin-bottom:8px">Selecciona el chofer a enviar:</div>
+    <div id="guiaswa-list" style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px"></div>
+    <button class="btn btn-secondary" style="width:100%" onclick="document.getElementById('guiaswa-modal-bg').classList.remove('show')">✕ CANCELAR</button>
+  </div>
+</div>
+
+<!-- ══════ MODAL SELECCIONAR CHOFERES PARA EXCEL ══════ -->
+<div class="modal-bg" id="excelsel-modal-bg">
+  <div class="modal" style="border-top-color:#1d4ed8">
+    <div class="modal-handle"></div>
+    <div class="modal-title">📊 Excel — Elegir Choferes</div>
+    <div style="display:flex;gap:8px;margin-bottom:12px">
+      <button class="btn btn-secondary" style="flex:1;font-size:0.72rem" onclick="excelSelectAll(true)">✓ Marcar todos</button>
+      <button class="btn btn-secondary" style="flex:1;font-size:0.72rem" onclick="excelSelectAll(false)">✕ Desmarcar todos</button>
+    </div>
+    <div id="excelsel-list" style="max-height:44vh;overflow-y:auto;margin-bottom:14px"></div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-primary" style="flex:1" onclick="confirmExcelSelect()">📊 GENERAR EXCEL</button>
+      <button class="btn btn-secondary" style="flex:0 0 auto;padding:13px 18px" onclick="document.getElementById('excelsel-modal-bg').classList.remove('show')">✕</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ MODAL DASH PREVIEW ══════ -->
+<div class="modal-bg" id="dash-modal-bg">
+  <div class="modal" style="border-top-color:#7c3aed;max-height:92vh">
+    <div class="modal-handle"></div>
+    <div class="modal-title">📸 DASH — Resumen</div>
+    <canvas id="dash-canvas" style="width:100%;border-radius:var(--r-sm);display:block;margin-bottom:12px"></canvas>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-primary" style="flex:1" onclick="downloadDash()">⬇ DESCARGAR IMAGEN</button>
+      <button class="btn btn-secondary" onclick="shareDash()" style="flex:1">📤 COMPARTIR</button>
+    </div>
+    <button class="btn btn-secondary" style="width:100%;margin-top:8px" onclick="document.getElementById('dash-modal-bg').classList.remove('show')">✕ CERRAR</button>
+  </div>
+</div>
+
+<!-- ══════ MODAL BUSCAR POR CÁMARA ══════ -->
+<div class="modal-bg" id="camsearch-modal-bg">
+  <div class="modal" style="border-top-color:#7c3aed">
+    <div class="modal-handle"></div>
+    <div class="modal-title">🔎 Buscar por Cámara</div>
+    <div id="camsearch-reader" style="border-radius:var(--r-sm);overflow:hidden;margin-bottom:12px"></div>
+    <div id="camsearch-result" style="min-height:60px"></div>
+    <button class="btn btn-secondary" style="width:100%;margin-top:10px" onclick="closeCamSearch()">✕ CERRAR</button>
+  </div>
+</div>
+
+<!-- ══════ MODAL IMILE PREFIJO DESCONOCIDO ══════ -->
+<div class="modal-bg" id="imile-confirm-bg">
+  <div class="modal" style="border-top-color:#f59e0b">
+    <div class="modal-handle"></div>
+    <div class="modal-title" style="color:#d97706">⚠️ Prefijo desconocido</div>
+    <div style="background:#fffbeb;border:1.5px solid #fcd34d;border-radius:var(--r-sm);padding:14px;margin-bottom:16px">
+      <div style="font-size:0.72rem;color:#92400e;font-weight:700;margin-bottom:6px">Código escaneado:</div>
+      <div style="font-size:0.9rem;font-weight:900;font-family:var(--mono);color:#0f172a;word-break:break-all;margin-bottom:10px" id="imile-confirm-code">—</div>
+      <div style="font-size:0.75rem;color:#78350f;line-height:1.7">
+        Este código <strong>no coincide</strong> con los formatos iMile conocidos.<br>
+        Puede ser un código cercano leído por error, o un formato nuevo de iMile.<br>
+        Si lo guardas, la app <strong>aprenderá este formato</strong> y no te preguntará de nuevo para códigos parecidos.
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <button class="btn btn-primary" onclick="confirmImileAdd()" style="background:linear-gradient(135deg,#d97706,#b45309)">
+        ✅ SÍ, GUARDAR Y APRENDER FORMATO
+      </button>
+      <button class="btn btn-secondary" onclick="closeImileConfirm()">
+        🔄 NO — ESCANEAR DE NUEVO
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ MODAL REASIGNAR GUÍA ══════ -->
+<div class="modal-bg" id="reasign-modal-bg">
+  <div class="modal" style="border-top-color:var(--warn)">
+    <div class="modal-handle"></div>
+    <div class="modal-title" style="color:var(--warn)">⚠️ Guía en otro chofer</div>
+    <div style="background:var(--warn-light);border:1.5px solid #fcd34d;border-radius:var(--r-sm);padding:14px;margin-bottom:16px">
+      <div style="font-size:0.95rem;font-weight:800;font-family:var(--mono);color:var(--text);margin-bottom:10px;word-break:break-all" id="reasign-guia">—</div>
+      <div style="font-size:0.78rem;line-height:1.8">
+        Esta guía ya está registrada en:<br>
+        <strong style="color:var(--danger)">👤 <span id="reasign-from">—</span></strong><br><br>
+        ¿La quieres quitar de ahí y asignar a:<br>
+        <strong style="color:var(--success)">👤 <span id="reasign-to">—</span></strong>?
+      </div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-green" style="flex:1" onclick="confirmReasign()">✓ SÍ, REASIGNAR</button>
+      <button class="btn btn-secondary" style="flex:1" onclick="closeReasignModal()">✕ CANCELAR</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ MODAL MANIFIESTO ══════ -->
+<div class="modal-bg" id="manifest-modal-bg">
+  <div class="modal" style="max-height:92vh;border-top-color:#1d4ed8">
+    <div class="modal-handle"></div>
+    <div class="modal-title">🖨️ Imprimir Manifiesto</div>
+    <div style="margin-bottom:12px">
+      <div class="label-sm" style="margin-bottom:6px">Seleccionar chofer</div>
+      <select class="input-text" id="manifest-ch-select" onchange="renderManifestPreview()">
+        <option value="">— Todos los choferes —</option>
+      </select>
+    </div>
+    <div style="margin-bottom:12px">
+      <div class="label-sm" style="margin-bottom:6px">Nombre de empresa (opcional)</div>
+      <input class="input-text" id="manifest-empresa" type="text" placeholder="Ej: Paquetería Express SA" oninput="renderManifestPreview()">
+    </div>
+    <div style="margin-bottom:12px">
+      <div class="label-sm" style="margin-bottom:6px">Filtrar por fecha</div>
+      <select class="input-text" id="manifest-fecha-select" onchange="renderManifestPreview()">
+        <option value="">— Todas las fechas —</option>
+      </select>
+    </div>
+    <div id="manifest-preview" style="background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:12px;margin-bottom:14px;font-size:0.78rem;line-height:1.7"></div>
+    <div style="margin-bottom:12px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <div class="label-sm">Firma del chofer</div>
+        <button onclick="clearSignature()" style="background:none;border:1px solid var(--border2);border-radius:6px;padding:3px 10px;font-size:0.65rem;font-weight:700;color:var(--text2);cursor:pointer">Limpiar</button>
+      </div>
+      <canvas id="sig-canvas" width="460" height="140"
+        style="width:100%;height:140px;border:2px dashed var(--border);border-radius:var(--r-sm);background:#fff;touch-action:none;cursor:crosshair;display:block"></canvas>
+      <div style="font-size:0.6rem;color:var(--text2);margin-top:4px;text-align:center">Firma con el dedo o mouse</div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-primary" style="flex:1" onclick="printManifiesto()">🖨️ IMPRIMIR</button>
+      <button class="btn btn-secondary" style="flex:0 0 auto;padding:13px 18px" onclick="closeManifiestoModal()">✕</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ MODAL EDITAR/BORRAR CHOFER ══════ -->
+<div class="modal-bg" id="choedit-modal-bg">
+  <div class="modal" style="border-top-color:var(--warn)">
+    <div class="modal-handle"></div>
+    <div class="modal-title" style="color:var(--warn)">✏️ Chofer</div>
+    <div style="background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:12px;margin-bottom:14px;display:flex;align-items:center;gap:10px">
+      <div id="choedit-av" style="width:40px;height:40px;border-radius:50%;background:var(--hero-grad);color:#fff;font-size:.95rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">?</div>
+      <div id="choedit-name" style="font-size:0.95rem;font-weight:800;color:var(--text)">—</div>
+    </div>
+    <div style="margin-bottom:14px">
+      <div class="label-sm" style="margin-bottom:6px">Nuevo nombre</div>
+      <input class="input-text" id="choedit-input" type="text" placeholder="Nombre del chofer...">
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <button class="btn btn-primary" style="background:var(--accent)" onclick="confirmEditChofer()">✏️ GUARDAR NOMBRE</button>
+      <button class="btn btn-red" onclick="confirmDeleteChofer()">🗑 ELIMINAR CHOFER</button>
+      <button class="btn btn-secondary" onclick="document.getElementById('choedit-modal-bg').classList.remove('show')">✕ CANCELAR</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ══════════════════════════════════════
+   INDEXEDDB
+══════════════════════════════════════ */
+const DB_NAME='escanerguias_v5';
+let db=null,dbOK=false;
+
+function openDB(){
+  return new Promise((res,rej)=>{
+    if(!window.indexedDB){rej(new Error('No soportado'));return;}
+    const req=indexedDB.open(DB_NAME,1);
+    req.onupgradeneeded=e=>{
+      const d=e.target.result;
+      if(!d.objectStoreNames.contains('records')){
+        const s=d.createObjectStore('records',{keyPath:'id'});
+        s.createIndex('guia','guia',{unique:false});
+        s.createIndex('chofer','chofer',{unique:false});
+      }
+      if(!d.objectStoreNames.contains('config'))
+        d.createObjectStore('config',{keyPath:'key'});
+    };
+    req.onsuccess=e=>{db=e.target.result;dbOK=true;res();};
+    req.onerror=e=>rej(e.target.error);
+    setTimeout(()=>{if(!db)rej(new Error('Timeout'));},6000);
+  });
+}
+const idbPut=(store,val)=>new Promise((res,rej)=>{
+  if(!dbOK){res();return;}
+  const t=db.transaction(store,'readwrite');
+  t.objectStore(store).put(val);
+  t.oncomplete=res;t.onerror=e=>rej(e.target.error);
+});
+const idbDel=(store,key)=>new Promise((res,rej)=>{
+  if(!dbOK){res();return;}
+  const t=db.transaction(store,'readwrite');
+  t.objectStore(store).delete(key);
+  t.oncomplete=res;t.onerror=e=>rej(e.target.error);
+});
+const idbGetAll=store=>new Promise((res,rej)=>{
+  if(!dbOK){res([]);return;}
+  const req=db.transaction(store,'readonly').objectStore(store).getAll();
+  req.onsuccess=e=>res(e.target.result);
+  req.onerror=e=>rej(e.target.error);
+});
+const idbClear=store=>new Promise((res,rej)=>{
+  if(!dbOK){res();return;}
+  const t=db.transaction(store,'readwrite');
+  t.objectStore(store).clear();
+  t.oncomplete=res;t.onerror=e=>rej(e.target.error);
+});
+async function cfgGet(key,def){
+  try{const a=await idbGetAll('config');const f=a.find(c=>c.key===key);return f?f.value:def;}
+  catch{return def;}
+}
+const cfgSet=(k,v)=>idbPut('config',{key:k,value:v});
+
+/* ══════════════════════════════════════
+   ESTADO
+══════════════════════════════════════ */
+let records=[],choferes=[],extraCols=[],dupCount=0;
+let guidSet=new Set(),activeChofer='';
+let camOn=false,facing='environment',html5Qr=null;
+let selectedCamId='',camList=[];
+let sortCol='timestamp',sortAsc=false,filterCh=null,torchOn=false;
+let lastCode='',lastTime=0;
+
+const today=()=>new Date().toLocaleDateString('es-MX');
+const nowStr=()=>new Date().toLocaleString('es-MX');
+const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const escA=s=>String(s||'').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+const ini=s=>(s||'?').trim()[0].toUpperCase();
+
+/* ══════════════════════════════════════
+   DB STATUS
+══════════════════════════════════════ */
+function setDbPill(s,msg){const el=document.getElementById('db-pill');el.className='db-pill '+s;el.textContent=msg;}
+async function persistRec(rec){
+  setDbPill('saving','💾...');
+  try{await idbPut('records',rec);setDbPill('ok','💾 OK');}
+  catch(e){setDbPill('err','❌ ERR');toast('⚠ Error guardando: '+e.message);}
+}
+const persistCfg=()=>Promise.all([
+  cfgSet('choferes',choferes),cfgSet('extraCols',extraCols),
+  cfgSet('dupCount',dupCount),cfgSet('activeChofer',activeChofer)
+]);
+
+/* ══════════════════════════════════════
+   MODO COMPATIBILIDAD
+══════════════════════════════════════ */
+function saveCompatMode(){
+  const v=document.getElementById('set-compat').checked;
+  localStorage.setItem('cam_compat_mode',v?'1':'0');
+}
+function loadCompatMode(){
+  return localStorage.getItem('cam_compat_mode')==='1';
+}
+
+/* ══════════════════════════════════════
+   TABS
+══════════════════════════════════════ */
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
+  document.querySelectorAll('.tab,.panel').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active');
+  document.getElementById(t.dataset.tab+'-panel').classList.add('active');
+  if(t.dataset.tab==='data')renderTable();
+  if(t.dataset.tab==='export')renderExport();
+  if(t.dataset.tab==='settings')renderSettings();
+  if(t.dataset.tab==='history')renderHistory();
+}));
+
+/* ══════════════════════════════════════
+   SESIONES / HISTORIAL
+══════════════════════════════════════ */
+let sessions=[]; // array de objetos sesión archivada
+
+async function loadSessions(){
+  sessions=await cfgGet('sessions',[]);
+}
+async function saveSessions(){
+  await cfgSet('sessions',sessions);
+}
+
+function openCloseShiftModal(){
+  if(!records.length){toast('⚠ No hay guías escaneadas para cerrar turno');return;}
+  // Llenar resumen
+  const chMap={};
+  records.forEach(r=>{if(!chMap[r.chofer])chMap[r.chofer]=0;chMap[r.chofer]++;});
+  document.getElementById('sm-total').textContent=records.length;
+  document.getElementById('sm-chs').textContent=Object.keys(chMap).length;
+  const list=document.getElementById('sm-ch-list');
+  list.innerHTML=Object.entries(chMap)
+    .sort((a,b)=>b[1]-a[1])
+    .map(([ch,n])=>`
+      <div class="shift-chofer-row">
+        <span class="shift-chofer-name">${esc(ch||'Sin asignar')}</span>
+        <span class="shift-chofer-cnt">${n} guías</span>
+      </div>`).join('');
+  document.getElementById('shift-modal-overlay').classList.add('show');
+}
+function closeShiftModal(){
+  document.getElementById('shift-modal-overlay').classList.remove('show');
+}
+document.getElementById('shift-modal-overlay').addEventListener('click',e=>{
+  if(e.target===document.getElementById('shift-modal-overlay'))closeShiftModal();
+});
+
+async function doCloseShift(mode){
+  closeShiftModal();
+  // Armar objeto sesión
+  const chMap={};
+  records.forEach(r=>{if(!chMap[r.chofer])chMap[r.chofer]=[];chMap[r.chofer].push(r.guia);});
+  const session={
+    id: Date.now(),
+    date: today(),
+    closedAt: nowStr(),
+    totalGuias: records.length,
+    choferes: chMap,
+    records: JSON.parse(JSON.stringify(records))
+  };
+  sessions.unshift(session);
+  if(sessions.length>60)sessions=sessions.slice(0,60); // máx 60 sesiones
+  await saveSessions();
+
+  if(mode==='excel'){
+    exportExcelFromRecords(session.records, session.date);
+  } else if(mode==='wa'){
+    sendShiftSummaryWA(session);
+  }
+
+  // Limpiar registros activos
+  await idbClear('records');
+  records=[];
+  guidSet=new Set();
+  activeChofer='';
+  await persistCfg();
+  updateStats();updateChoferBox();renderRecents();
+  toast('✅ Turno cerrado y archivado');
+  // Ir a historial
+  setTimeout(()=>{
+    document.querySelectorAll('.tab,.panel').forEach(x=>x.classList.remove('active'));
+    document.querySelector('[data-tab="history"]').classList.add('active');
+    document.getElementById('history-panel').classList.add('active');
+    renderHistory();
+  },300);
+}
+
+function sendShiftSummaryWA(session){
+  const lines=Object.entries(session.choferes)
+    .sort((a,b)=>b[1].length-a[1].length)
+    .map(([ch,gs])=>`- ${ch}: *${gs.length}* guias`).join('\n');
+  const msg=encodeURIComponent(
+    `*Cierre de Turno - ${session.date}*\n`+
+    `Hora: ${session.closedAt}\n\n`+
+    `${lines}\n\n`+
+    `*TOTAL: ${session.totalGuias} guias*`
+  );
+  window.open(`https://wa.me/?text=${msg}`,'_blank');
+}
+
+function exportExcelFromRecords(recs, dateStr){
+  if(!recs||!recs.length){toast('Sin datos');return;}
+  const wb=XLSX.utils.book_new();
+  const chMap={};
+  recs.forEach(r=>{if(!chMap[r.chofer||'Sin asignar'])chMap[r.chofer||'Sin asignar']=[];chMap[r.chofer||'Sin asignar'].push(r.guia);});
+  const sumData=[['CHOFER','TOTAL GUIAS'],...Object.entries(chMap).sort((a,b)=>b[1].length-a[1].length).map(([ch,gs])=>[ch,gs.length])];
+  const wsSum=XLSX.utils.aoa_to_sheet(sumData);wsSum['!cols']=[{wch:28},{wch:14}];
+  XLSX.utils.book_append_sheet(wb,wsSum,'Resumen');
+  const hdr=['GUIA','CHOFER','FECHA','HORA'];
+  const ws2=XLSX.utils.aoa_to_sheet([hdr,...recs.map(r=>[r.guia,r.chofer||'',r.fecha||'',r.hora||''])]);
+  ws2['!cols']=hdr.map(()=>({wch:24}));
+  XLSX.utils.book_append_sheet(wb,ws2,'Detalle');
+  Object.entries(chMap).forEach(([ch,guias])=>{
+    const data=[['N','GUIA'],...guias.map((g,i)=>[i+1,g])];
+    const ws=XLSX.utils.aoa_to_sheet(data);ws['!cols']=[{wch:5},{wch:24}];
+    XLSX.utils.book_append_sheet(wb,ws,ch.substring(0,31));
+  });
+  const filename=`guias_${(dateStr||today()).replace(/\//g,'-')}.xlsx`;
+  const wbout=XLSX.write(wb,{bookType:'xlsx',type:'array'});
+  const blob=new Blob([wbout],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download=filename;a.click();
+  setTimeout(()=>URL.revokeObjectURL(url),5000);
+  toast('Excel descargado: '+filename);
+}
+
+function renderHistory(){
+  loadSessions().then(()=>{
+    const list=document.getElementById('history-list');
+    document.getElementById('hist-count').textContent=sessions.length;
+    if(!sessions.length){
+      list.innerHTML=`<div style="text-align:center;padding:40px 20px;color:var(--text2)">
+        <div style="font-size:2.5rem;margin-bottom:10px"><span class="eico"><span class="ei">🗂</span><span class="si"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg></span></span></div>
+        <div style="font-size:0.9rem;font-weight:700">Sin sesiones archivadas</div>
+        <div style="font-size:0.72rem;margin-top:6px">Cierra tu primer turno desde Export → Cerrar Turno.</div>
+      </div>`;
+      return;
+    }
+    list.innerHTML=sessions.map((s,i)=>{
+      const chLines=Object.entries(s.choferes)
+        .sort((a,b)=>b[1].length-a[1].length)
+        .map(([ch,gs])=>`<span style="display:inline-flex;align-items:center;gap:4px;background:var(--surface3);border-radius:8px;padding:2px 8px;font-size:0.68rem;font-weight:700;margin:2px">${esc(ch)} <strong style="color:var(--accent)">${gs.length}</strong></span>`)
+        .join('');
+      return `<div class="session-card">
+        <div class="session-card-ico">📦</div>
+        <div style="flex:1;min-width:0">
+          <div class="session-card-date">${esc(s.date)}</div>
+          <div class="session-card-meta">Cerrado: ${esc(s.closedAt)}</div>
+          <div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:2px">${chLines}</div>
+          <div class="session-card-actions">
+            <button class="btn btn-secondary" onclick="sessionExcel(${i})">📊 Excel</button>
+            <button class="btn btn-secondary" onclick="sessionSummaryWA(${i})">💬 Resumen WA</button>
+            <button class="btn btn-secondary" onclick="sessionGuiasWA(${i})">📋 Guías WA</button>
+            <button class="btn btn-red" onclick="deleteSession(${i})">🗑</button>
+          </div>
+        </div>
+        <div class="session-card-count">${s.totalGuias} guías</div>
+      </div>`;
+    }).join('');
+  });
+}
+
+function sessionExcel(idx){
+  const s=sessions[idx];
+  if(!s)return;
+  exportExcelFromRecords(s.records,s.date);
+}
+function sessionSummaryWA(idx){
+  const s=sessions[idx];
+  if(!s)return;
+  sendShiftSummaryWA(s);
+}
+function sessionGuiasWA(idx){
+  const s=sessions[idx];
+  if(!s)return;
+  // Si hay más de un chofer, preguntar cuál; si solo uno, enviar directo
+  const chs=Object.keys(s.choferes);
+  if(chs.length===1){
+    sendGuiasWA(chs[0], s.choferes[chs[0]], s.date);
+    return;
+  }
+  // Mostrar picker
+  const list=document.getElementById('guiaswa-list');
+  list.innerHTML=chs.sort((a,b)=>s.choferes[b].length-s.choferes[a].length).map(ch=>`
+    <button class="btn btn-secondary" style="justify-content:space-between;display:flex"
+      onclick="sendGuiasWA('${escA(ch)}',sessions[${idx}].choferes['${escA(ch)}'],sessions[${idx}].date);document.getElementById('guiaswa-modal-bg').classList.remove('show')">
+      <span>${esc(ch)}</span>
+      <span style="font-weight:800;color:var(--accent)">${s.choferes[ch].length} guias</span>
+    </button>`).join('');
+  document.getElementById('guiaswa-modal-bg').classList.add('show');
+}
+
+function openGuiasWAModal(){
+  if(!records.length){toast('No hay guias escaneadas');return;}
+  const chMap={};
+  records.forEach(r=>{
+    const ch=r.chofer||'Sin asignar';
+    if(!chMap[ch])chMap[ch]=[];
+    chMap[ch].push(r.guia);
+  });
+  const chs=Object.keys(chMap);
+  if(chs.length===1){
+    sendGuiasWA(chs[0], chMap[chs[0]], today());
+    return;
+  }
+  const list=document.getElementById('guiaswa-list');
+  list.innerHTML=chs.sort((a,b)=>chMap[b].length-chMap[a].length).map(ch=>`
+    <button class="btn btn-secondary" style="justify-content:space-between;display:flex"
+      onclick="sendGuiasWA('${escA(ch)}',records.filter(r=>(r.chofer||'Sin asignar')==='${escA(ch)}').map(r=>r.guia),'${today()}');document.getElementById('guiaswa-modal-bg').classList.remove('show')">
+      <span>${esc(ch)}</span>
+      <span style="font-weight:800;color:var(--accent)">${chMap[ch].length} guias</span>
+    </button>`).join('');
+  document.getElementById('guiaswa-modal-bg').classList.add('show');
+}
+
+function sendGuiasWA(chofer, guias, fecha){
+  const lista=guias.map((g,i)=>`${i+1}. ${g}`).join('\n');
+  const msg=encodeURIComponent(
+    `*${chofer} - ${fecha}*\n`+
+    `${guias.length} guias\n\n`+
+    `${lista}`
+  );
+  window.open(`https://wa.me/?text=${msg}`,'_blank');
+}
+async function deleteSession(idx){
+  if(!confirm(`¿Eliminar sesión del ${sessions[idx]?.date}?\nEsta acción no se puede deshacer.`))return;
+  sessions.splice(idx,1);
+  await saveSessions();
+  renderHistory();
+  toast('🗑 Sesión eliminada');
+}
+
+/* ══════════════════════════════════════
+   MODAL CHOFER
+══════════════════════════════════════ */
+function openModal(){
+  const g=document.getElementById('modal-grid');
+  if(!choferes.length){
+    g.innerHTML=`<div class="abox abox-warn">No hay choferes registrados. Agrega uno abajo o ve a ⚙️ Config → Choferes.</div>`;
+  } else {
+    g.innerHTML=choferes.map((c,idx)=>{
+      const n=records.filter(r=>r.chofer===c).length;
+      const isActive=c===activeChofer;
+      return `<div class="ch-opt" data-chofer-idx="${idx}" style="${isActive?'border-color:var(--accent);background:var(--accent-light)':''}">
+        <div class="ch-opt-av">${ini(c)}</div>
+        <div style="flex:1"><div class="ch-opt-name">${esc(c)}${isActive?' ✓':''}</div><div class="ch-opt-sub">${n} guía${n!==1?'s':''} registradas</div></div>
+        <div class="ch-opt-count">${n}</div>
+      </div>`;
+    }).join('');
+    g.querySelectorAll('.ch-opt[data-chofer-idx]').forEach(el=>{
+      let pressTimer=null;
+      // Tap normal → seleccionar
+      el.addEventListener('click',()=>{
+        const idx=parseInt(el.dataset.choferIdx);
+        selectChofer(choferes[idx]);
+      });
+      // Long press → editar/borrar
+      const startPress=()=>{
+        pressTimer=setTimeout(()=>{
+          const idx=parseInt(el.dataset.choferIdx);
+          openChoferEditModal(idx);
+        },600);
+      };
+      const cancelPress=()=>clearTimeout(pressTimer);
+      el.addEventListener('mousedown',startPress);
+      el.addEventListener('touchstart',startPress,{passive:true});
+      el.addEventListener('mouseup',cancelPress);
+      el.addEventListener('mouseleave',cancelPress);
+      el.addEventListener('touchend',cancelPress);
+      el.addEventListener('touchcancel',cancelPress);
+    });
+  }
+  document.getElementById('modal-bg').classList.add('show');
+  document.getElementById('modal-new-ch').value='';
+}
+function closeModal(){document.getElementById('modal-bg').classList.remove('show');const ms=document.getElementById('modal-search');if(ms)ms.value='';}
+
+/* ════ Búsqueda en modal de choferes ════ */
+function filterModalChoferes(){
+  const q=(document.getElementById('modal-search')?.value||'').toLowerCase().trim();
+  document.querySelectorAll('#modal-grid .ch-opt').forEach(el=>{
+    const name=(el.querySelector('.ch-opt-name')?.textContent||'').toLowerCase();
+    el.style.display=(!q||name.includes(q))?'':'none';
+  });
+}
+
+document.getElementById('modal-bg').addEventListener('click',e=>{if(e.target===document.getElementById('modal-bg'))closeModal();});
+
+async function selectChofer(name){
+  activeChofer=name;closeModal();updateChoferBox();
+  await cfgSet('activeChofer',name);
+  saveZonaChofer();
+  toast('✓ Chofer: '+name);
+}
+async function modalAdd(){
+  const inp=document.getElementById('modal-new-ch');const v=inp.value.trim();if(!v)return;
+  if(!choferes.includes(v)){choferes.push(v);await persistCfg();}
+  await selectChofer(v);renderSettings();
+}
+
+function updateChoferBox(){
+  const has=!!activeChofer;
+  document.getElementById('box-empty').style.display=has?'none':'block';
+  document.getElementById('box-active').style.display=has?'flex':'none';
+  if(has){
+    document.getElementById('ch-av').textContent=ini(activeChofer);
+    document.getElementById('ch-nm').textContent=activeChofer;
+    const n=records.filter(r=>r.chofer===activeChofer&&r.fecha===today()).length;
+    document.getElementById('ch-sb').textContent=n+' guía'+(n!==1?'s':'')+' escaneadas hoy';
+  }
+  // Chip en header
+  const chip=document.getElementById('hdr-chofer-chip');
+  const chipAv=document.getElementById('hdr-chip-av');
+  const chipNm=document.getElementById('hdr-chip-nm');
+  if(chip&&chipAv&&chipNm){
+    if(has){chip.classList.add('visible');chipAv.textContent=ini(activeChofer);chipNm.textContent=activeChofer;}
+    else{chip.classList.remove('visible');}
+  }
+}
+
+/* ══════════════════════════════════════
+   DEBUG CONSOLE
+══════════════════════════════════════ */
+const dbg={
+  _log:[],
+  log(msg,type='info'){
+    const t=new Date().toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    const entry={t,msg:String(msg),type};
+    this._log.unshift(entry);
+    if(this._log.length>120)this._log.pop();
+    console.log(`[${t}][${type}] ${msg}`);
+    this._render();
+  },
+  warn(msg){this.log(msg,'warn');},
+  err(msg){this.log(msg,'error');},
+  _render(){
+    const el=document.getElementById('dbg-list');
+    if(!el||!document.getElementById('dbg-panel')?.classList.contains('dbg-open'))return;
+    el.innerHTML=this._log.map(e=>`<div class="dbg-row dbg-${e.type}"><span class="dbg-t">${e.t}</span><span class="dbg-m">${e.msg}</span></div>`).join('');
+  }
+};
+
+function toggleDebug(){
+  const p=document.getElementById('dbg-panel');
+  p.classList.toggle('dbg-open');
+  if(p.classList.contains('dbg-open')){
+    dbg._render();
+    // asegurar que Config esté visible
+    const sp=document.getElementById('settings-panel');
+    if(sp&&!sp.classList.contains('active')){
+      document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+      document.querySelector('[data-tab="settings"]')?.classList.add('active');
+      sp.classList.add('active');
+    }
+    setTimeout(()=>p.scrollIntoView({behavior:'smooth',block:'nearest'}),100);
+  }
+}
+
+async function toggleDiag(){
+  const dp=document.getElementById('diag-panel');
+  if(dp.classList.contains('open')){dp.classList.remove('open');return;}
+  dp.classList.add('open');
+  dp.textContent='Ejecutando diagnóstico...';
+  let t='═══ DIAGNÓSTICO CÁMARA ═══\n';
+  t+='URL: '+location.href+'\n';
+  t+='Protocolo: '+location.protocol+(location.protocol==='https:'?' ✅':' ❌ (necesita HTTPS)')+'\n';
+  t+='UA: '+navigator.userAgent.slice(0,90)+'\n';
+  t+='mediaDevices: '+(!!navigator.mediaDevices?'✅':'❌')+'\n';
+  t+='getUserMedia: '+(!!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia)?'✅':'❌')+'\n';
+  t+='Html5Qrcode: '+(typeof Html5Qrcode!=='undefined'?'✅':'❌')+'\n\n';
+  try{
+    if(navigator.permissions&&navigator.permissions.query){
+      const p=await navigator.permissions.query({name:'camera'});
+      t+='Permiso cámara: '+p.state+'\n\n';
+    }
+  }catch(e){t+='Permiso cámara: no consultable\n\n';}
+  try{
+    const s=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}},audio:false});
+    const tr=s.getVideoTracks()[0];
+    t+='✅ getUserMedia OK\n';
+    t+='   Track: '+(tr?tr.label:'?')+'\n';
+    const set=tr?tr.getSettings():{};
+    t+='   Settings: '+JSON.stringify(set)+'\n\n';
+    s.getTracks().forEach(x=>x.stop());
+  }catch(e){
+    t+='❌ getUserMedia FALLÓ\n   name: '+e.name+'\n   msg: '+e.message+'\n\n';
+  }
+  try{
+    const cams=await Html5Qrcode.getCameras();
+    t+='CÁMARAS DETECTADAS: '+cams.length+'\n';
+    for(let i=0;i<cams.length;i++){
+      t+='  ['+i+'] '+(cams[i].label||'(sin label)')+'\n';
+      t+='      id='+cams[i].id.slice(0,20)+'...\n';
+    }
+    t+='\nselectedCamId='+(selectedCamId||'(ninguno)')+'\nfacing='+facing+'\ncamOn='+camOn+'\n';
+  }catch(e){t+='❌ Html5Qrcode.getCameras() falló: '+e.message+'\n';}
+  dp.textContent=t;
+}
+
+/* ══════════════════════════════════════
+   CÁMARA (html5-qrcode engine)
+══════════════════════════════════════ */
+async function toggleCam(){if(camOn)await stopCam();else await startCam();}
+
+/* Pide permisos de cámara una vez y luego enumera dispositivos
+   (necesario para que getCameras() devuelva los labels reales en Android) */
+async function ensureCamPermission(){
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
+    throw new Error('Tu navegador no soporta getUserMedia. Usa Chrome o Firefox actualizado.');
+  }
+  // Petición mínima para que el SO muestre el prompt de permisos
+  const s=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}},audio:false});
+  // Liberar inmediatamente (html5-qrcode abrirá la suya)
+  s.getTracks().forEach(t=>t.stop());
+}
+
+async function refreshCamList(){
+  try{
+    const cams=await Html5Qrcode.getCameras();
+    camList=cams||[];
+    const sel=document.getElementById('cam-select');
+    const wrap=document.getElementById('cam-selector-wrap');
+    if(sel){
+      sel.innerHTML='';
+      camList.forEach((c,i)=>{
+        const o=document.createElement('option');
+        o.value=c.id;
+        o.textContent=(c.label||('Cámara '+(i+1)));
+        sel.appendChild(o);
+      });
+      // Restaurar preferencia guardada si sigue disponible
+      const savedOK=selectedCamId&&camList.some(c=>c.id===selectedCamId);
+      if(savedOK){sel.value=selectedCamId;}
+      else if(camList.length){
+        const back=camList.find(c=>/back|rear|environment|trasera|posterior/i.test(c.label||''));
+        selectedCamId=(back||camList[camList.length-1]).id;
+        sel.value=selectedCamId;
+      }
+    }
+    if(wrap&&camList.length>1)wrap.style.display='block';
+    return camList;
+  }catch(e){
+    console.warn('getCameras error:',e);
+    return [];
+  }
+}
+
+function onCamSelectChange(){
+  const sel=document.getElementById('cam-select');
+  if(!sel)return;
+  selectedCamId=sel.value;
+  cfgSet('selectedCamId',selectedCamId); // persistir preferencia
+  if(camOn){stopCam().then(startCam);}
+}
+
+/* Construye una lista de configuraciones a probar en cascada.
+   Si una falla, prueba la siguiente. */
+function buildCamAttempts(){
+  const resEl=document.getElementById('set-res');
+  const w=parseInt(resEl?.value||'1280');
+  const h=w===1920?1080:w===1280?720:480;
+  const attempts=[];
+
+  // 1) deviceId exacto (si hay selección)
+  if(selectedCamId){
+    attempts.push({src:{deviceId:{exact:selectedCamId}},desc:'deviceId='+selectedCamId.slice(0,8)});
+  }
+
+  // 2) facingMode actual con resolución ideal
+  attempts.push({src:{facingMode:facing},desc:'facingMode='+facing+' '+w+'x'+h,
+    constraints:{width:{ideal:w},height:{ideal:h}}});
+
+  // 3) facingMode sin resolución
+  attempts.push({src:{facingMode:facing},desc:'facingMode='+facing+' (sin resolución)'});
+
+  // 4) facingMode ideal environment (algunos Android no soportan exact)
+  attempts.push({src:{facingMode:{ideal:'environment'}},desc:'facingMode ideal environment'});
+
+  // 5) cualquier cámara (deviceId del primer dispositivo)
+  if(camList.length){
+    camList.forEach((c,i)=>{
+      attempts.push({src:{deviceId:{exact:c.id}},desc:'fallback cam #'+i+' '+(c.label||'').slice(0,30)});
+    });
+  }
+
+  // 6) última opción: video genérico
+  attempts.push({src:true,desc:'video:true (genérico)'});
+
+  return attempts;
+}
+
+async function startCam(){
+  if(!activeChofer){toast('⚠ Primero selecciona un chofer');openModal();return;}
+  if(typeof Html5Qrcode==='undefined'){toast('⚠ Librería de cámara cargando, espera un momento');return;}
+
+  // Sin HTTPS/contexto seguro (típico en WebView de APK con file://) la
+  // cámara en vivo (getUserMedia) NO puede iniciar — es una restricción
+  // del navegador, no de esta app. En ese caso usamos como respaldo la
+  // captura de foto nativa (más lenta, pero funcional) en vez de bloquear.
+  if(location.protocol!=='https:'&&location.hostname!=='localhost'&&location.hostname!=='127.0.0.1'){
+    toast('⚠ Sin HTTPS: usando modo de foto como respaldo');
+    triggerPhotoCapture();
+    return;
+  }
+
+  try{
+    // 1. Pedir permiso de cámara explícitamente
+    try{
+      await ensureCamPermission();
+    }catch(permErr){
+      const msg=permErr&&permErr.name==='NotAllowedError'
+        ? '❌ Permiso de cámara denegado. Activa permisos en Ajustes del navegador.'
+        : '❌ No se pudo acceder a la cámara: '+(permErr.message||permErr);
+      toast(msg);
+      console.error('[startCam] permission error',permErr);
+      return;
+    }
+
+    // 2. Refrescar lista de cámaras (ahora con labels reales)
+    await refreshCamList();
+
+    // 3. Limpiar instancia anterior
+    if(html5Qr){try{await html5Qr.stop();}catch(e){}try{await html5Qr.clear();}catch(e){}html5Qr=null;}
+
+    // 4. Crear nueva instancia sobre el DIV #reader
+    html5Qr=new Html5Qrcode('reader',{
+      experimentalFeatures:{useBarCodeDetectorIfSupported:true},
+      verbose:false
+    });
+
+    const baseCfg={
+      fps:15,
+      qrbox:(w,h)=>({width:Math.floor(w*0.88),height:Math.floor(h*0.45)}),
+      aspectRatio:1.7778,
+      formatsToSupport:[
+        Html5QrcodeSupportedFormats.CODE_128,
+        Html5QrcodeSupportedFormats.QR_CODE,
+        Html5QrcodeSupportedFormats.EAN_13,
+        Html5QrcodeSupportedFormats.EAN_8,
+        Html5QrcodeSupportedFormats.UPC_A,
+        Html5QrcodeSupportedFormats.CODE_39,
+        Html5QrcodeSupportedFormats.DATA_MATRIX,
+        Html5QrcodeSupportedFormats.PDF_417,
+        Html5QrcodeSupportedFormats.ITF,
+        Html5QrcodeSupportedFormats.AZTEC
+      ]
+    };
+
+    // 5. Intentar en cascada
+    const attempts=buildCamAttempts();
+    let started=false,lastErr=null;
+    for(const att of attempts){
+      try{
+        const cfg=Object.assign({},baseCfg);
+        if(att.constraints)cfg.videoConstraints=Object.assign({},att.constraints);
+        console.log('[startCam] intento:',att.desc);
+        await html5Qr.start(
+          att.src,
+          cfg,
+          code=>handleScan(code),
+          _=>{}
+        );
+        started=true;
+        console.log('[startCam] ✅ funcionó con:',att.desc);
+        break;
+      }catch(e){
+        lastErr=e;
+        console.warn('[startCam] falló',att.desc,e&&e.message);
+        try{await html5Qr.stop();}catch(_){}
+        try{await html5Qr.clear();}catch(_){}
+        // Recrear instancia para próximo intento
+        html5Qr=new Html5Qrcode('reader',{
+          experimentalFeatures:{useBarCodeDetectorIfSupported:true},
+          verbose:false
+        });
+      }
+    }
+
+    if(!started){
+      const m=(lastErr&&lastErr.message)||'desconocido';
+      toast('❌ No se pudo iniciar la cámara: '+m);
+      console.error('[startCam] todos los intentos fallaron. Último error:',lastErr);
+      html5Qr=null;
+      return;
+    }
+
+    camOn=true;
+    const btn=document.getElementById('btn-cam');
+    btn.innerHTML='<span class="btn-main-ico">⏹</span> PARAR CÁMARA';
+    btn.className='btn btn-red btn-main';
+    const badge=document.getElementById('cam-badge');
+    badge.textContent='🟢 EN VIVO · '+(facing==='environment'?'Cámara trasera':'Cámara frontal');
+    badge.className='cam-badge live';
+    // Ocultar header para maximizar área de escaneo
+    setTimeout(hideHeaderForScan, 1200);
+  }catch(e){
+    toast('Error cámara: '+(e&&e.message||e));
+    console.error('[startCam] excepción no controlada',e);
+  }
+}
+
+async function stopCam(){
+  if(html5Qr){
+    try{await html5Qr.stop();}catch(e){}
+    try{await html5Qr.clear();}catch(e){}
+    html5Qr=null;
+  }
+  camOn=false;
+  const btn=document.getElementById('btn-cam');
+  btn.innerHTML='<span class="btn-main-ico">▶</span> INICIAR CÁMARA';
+  btn.className='btn btn-primary btn-main';
+  const badge=document.getElementById('cam-badge');
+  badge.textContent='📵 Cámara apagada';
+  badge.className='cam-badge';
+  // Restaurar header
+  clearTimeout(_hdrRevealTimer);
+  restoreHeader();
+}
+
+async function switchCam(){
+  facing=facing==='environment'?'user':'environment';
+  // Al voltear, ignorar deviceId guardado para que se use facingMode
+  selectedCamId='';
+  if(camOn){await stopCam();await startCam();}else toast('Inicia la cámara primero');
+}
+
+async function toggleTorch(){
+  if(!html5Qr||!camOn){toast('Inicia la cámara primero');return;}
+  try{
+    torchOn=!torchOn;
+    await html5Qr.applyVideoConstraints({advanced:[{torch:torchOn}]});
+    document.getElementById('btn-torch').textContent=torchOn?'💡':'🔦';
+    toast(torchOn?'🔦 Linterna ON':'🔦 Linterna OFF');
+  }catch(e){toast('Linterna no disponible');torchOn=false;}
+}
+
+/* ══════════════════════════════════════
+   ESCANEO
+══════════════════════════════════════ */
+function handleScan(code){
+  const now=Date.now();
+  const pause=parseInt(document.getElementById('set-pause').value)||800;
+  if(code===lastCode&&now-lastTime<pause)return;
+  lastCode=code;lastTime=now;
+  updateLast4(code);
+  addRecord(code,'BARCODE/QR');
+}
+
+/* ══════════════════════════════════════
+   RESPALDO: ESCANEO POR FOTO NATIVA
+   Solo se usa cuando la cámara en vivo no puede iniciar (WebView sin
+   contexto seguro/HTTPS, típico al empaquetar como APK). Abre la
+   cámara nativa de Android vía <input type="file" capture="environment">
+   y decodifica la foto localmente con Html5Qrcode.scanFile() (offline,
+   sin necesidad de HTTPS). El resultado se entrega a handleScan(),
+   reutilizando todo el flujo existente: duplicados, validación iMile,
+   persistencia IndexedDB, Excel, etc.
+══════════════════════════════════════ */
+function triggerPhotoCapture(){
+  if(!activeChofer){toast('⚠ Primero selecciona un chofer');openModal();return;}
+  if(typeof Html5Qrcode==='undefined'){toast('⚠ Librería de cámara cargando, espera un momento');return;}
+  document.getElementById('scan-input').click();
+}
+
+async function handlePhotoCapture(evt){
+  const file=evt.target.files&&evt.target.files[0];
+  evt.target.value='';
+  if(!file)return;
+
+  if(typeof Html5Qrcode==='undefined'){
+    toast('⚠ Librería de cámara aún cargando, intenta de nuevo');
+    return;
+  }
+
+  toast('🔎 Analizando foto...');
+  let fileScanner=null;
+  try{
+    fileScanner=new Html5Qrcode('reader-file-scan',{
+      experimentalFeatures:{useBarCodeDetectorIfSupported:true},
+      verbose:false
+    });
+    const decodedText=await fileScanner.scanFile(file,false);
+    handleScan(decodedText);
+  }catch(e){
+    toast('❌ No se detectó ningún código en la foto. Intenta de nuevo, más de cerca y con buena luz.');
+    console.warn('[scanFile] no se pudo decodificar la foto:',e);
+  }finally{
+    if(fileScanner){
+      try{await fileScanner.clear();}catch(_){}
+    }
+  }
+}
+
+/* ══════════════════════════════════════
+   AGREGAR REGISTRO
+══════════════════════════════════════ */
+async function addRecord(code,type){
+  code=code.trim();if(!code)return;
+  updateLast4(code);
+
+  // 1) El chequeo de duplicados va PRIMERO y SIEMPRE, sin importar si el
+  //    código es un prefijo iMile reconocido o no. Así, una guía que ya
+  //    fue confirmada manualmente (prefijo desconocido) sí se marca como
+  //    duplicado si se vuelve a escanear.
+  if(document.getElementById('set-dedup').checked&&guidSet.has(code)){
+    const existing=records.find(r=>r.guia===code);
+    const existingChofer=existing?existing.chofer:'otro chofer';
+    if(existing&&existing.chofer===activeChofer){
+      dupCount++;showFlash('⚠ DUPLICADO: '+code,'dup');updateStats();
+      cfgSet('dupCount',dupCount);
+      if(document.getElementById('set-beep').checked)beepError();
+      if(document.getElementById('set-vibrate').checked&&navigator.vibrate)navigator.vibrate([100,60,100,60,100]);
+      return;
+    }
+    showReasignModal(code,type,existingChofer);return;
+  }
+
+  // 2) Solo si NO es duplicado, se valida el formato iMile (si el modo está activo)
+  if(iMileMode&&!isValidImile(code)){
+    if(document.getElementById('set-beep').checked)beepInvalid();
+    if(document.getElementById('set-vibrate').checked&&navigator.vibrate)navigator.vibrate([40,30,40,30,40]);
+    showImileConfirmModal(code,type);
+    return;
+  }
+
+  if(!activeChofer){toast('⚠ Selecciona un chofer primero');openModal();return;}
+  await doAddRecord(code,type);
+}
+
+async function doAddRecord(code,type){
+  const rec={
+    id:Date.now()+'_'+Math.random().toString(36).slice(2,6),
+    guia:code,tipo:type,chofer:activeChofer,zona:activeZona,
+    fecha:today(),hora:new Date().toLocaleTimeString('es-MX'),timestamp:Date.now()
+  };
+  extraCols.forEach(c=>{rec[c]='';});
+  records.unshift(rec);guidSet.add(code);
+  await persistRec(rec);
+  if(document.getElementById('set-beep').checked)beepOK();
+  if(document.getElementById('set-vibrate').checked&&navigator.vibrate)navigator.vibrate(60);
+  showFlash('✓ '+code,'ok');
+  updateStats();updateChoferBox();renderRecents();
+  const ab=parseInt(document.getElementById('set-ab').value)||0;
+  if(ab>0&&records.length%ab===0)exportBackupJSON(true);
+}
+
+/* Modal confirmación prefijo desconocido iMile */
+let imileConfirmPending={code:'',type:''};
+function showImileConfirmModal(code,type){
+  imileConfirmPending={code,type};
+  document.getElementById('imile-confirm-code').textContent=code;
+  document.getElementById('imile-confirm-bg').classList.add('show');
+  showFlash('⚠ Prefijo raro: '+code.slice(0,8)+'...','dup');
+}
+function closeImileConfirm(){
+  document.getElementById('imile-confirm-bg').classList.remove('show');
+  imileConfirmPending={code:'',type:''};
+}
+async function confirmImileAdd(){
+  const {code,type}=imileConfirmPending;
+  closeImileConfirm();
+  if(!code)return;
+  if(!activeChofer){toast('⚠ Selecciona un chofer primero');openModal();return;}
+  // Aprender el formato de este código para que futuros escaneos parecidos
+  // se reconozcan automáticamente y no vuelvan a preguntar.
+  await learnImilePattern(code);
+  await doAddRecord(code,type);
+}
+document.getElementById('imile-confirm-bg').addEventListener('click',e=>{
+  if(e.target===document.getElementById('imile-confirm-bg'))closeImileConfirm();
+});
+
+/* Modal reasignación */
+let reasignPending={code:'',type:''};
+function showReasignModal(code,type,fromChofer){
+  reasignPending={code,type};
+  document.getElementById('reasign-guia').textContent=code;
+  document.getElementById('reasign-from').textContent=fromChofer||'Sin asignar';
+  document.getElementById('reasign-to').textContent=activeChofer||'chofer actual';
+  document.getElementById('reasign-modal-bg').classList.add('show');
+  if(document.getElementById('set-beep').checked)beepError();
+  if(document.getElementById('set-vibrate').checked&&navigator.vibrate)navigator.vibrate([80,40,80]);
+}
+function closeReasignModal(){
+  document.getElementById('reasign-modal-bg').classList.remove('show');
+  reasignPending={code:'',type:''};
+}
+async function confirmReasign(){
+  const {code,type}=reasignPending;
+  if(!code){closeReasignModal();return;}
+  const idx=records.findIndex(r=>r.guia===code);
+  if(idx!==-1){
+    const oldRec=records[idx];
+    oldRec.chofer=activeChofer;oldRec.fecha=today();
+    oldRec.hora=new Date().toLocaleTimeString('es-MX');oldRec.timestamp=Date.now();
+    records.splice(idx,1);records.unshift(oldRec);
+    await persistRec(oldRec);
+  }
+  closeReasignModal();
+  if(document.getElementById('set-beep').checked)beepOK();
+  if(document.getElementById('set-vibrate').checked&&navigator.vibrate)navigator.vibrate(60);
+  showFlash('✓ '+code,'ok');
+  updateStats();updateChoferBox();renderRecents();
+  toast(`✓ Guía reasignada a ${activeChofer}`);
+}
+
+function addManual(){
+  const inp=document.getElementById('manual-in');const v=inp.value.trim();if(!v)return;
+  addRecord(v,'MANUAL');inp.value='';
+}
+document.getElementById('manual-in').addEventListener('keydown',e=>{if(e.key==='Enter')addManual();});
+
+/* ══════════════════════════════════════
+   RECIENTES
+══════════════════════════════════════ */
+function renderRecents(){
+  const el=document.getElementById('recents');
+  const last=records.slice(0,6);
+  if(!last.length){
+    el.innerHTML='<div style="color:var(--text2);font-size:0.75rem;padding:6px 0;font-weight:600">Aún no hay guías escaneadas</div>';
+    return;
+  }
+  el.innerHTML=last.map(r=>`<div class="recent-item">
+    <div class="recent-code">${esc(r.guia)}</div>
+    <div class="recent-ch">${esc(r.chofer||'—')}</div>
+    <div class="recent-time">${r.hora}</div>
+  </div>`).join('');
+}
+
+/* ══════════════════════════════════════
+   STATS
+══════════════════════════════════════ */
+function updateStats(){
+  const t=today();
+  const chs=new Set(records.filter(r=>r.chofer).map(r=>r.chofer));
+  const hoy=records.filter(r=>r.fecha===t).length;
+  document.getElementById('st-total').textContent=records.length;
+  document.getElementById('st-hoy').textContent=hoy;
+  document.getElementById('st-dups').textContent=dupCount;
+  document.getElementById('st-chof').textContent=chs.size;
+  document.getElementById('hdr-cnt').textContent=records.length+' guías';
+  // Badge en tab Lista
+  const badge=document.getElementById('tab-badge-hoy');
+  if(badge){badge.textContent=hoy;badge.style.display=hoy>0?'inline-flex':'none';}
+}
+
+/* ══════════════════════════════════════
+   FLASH
+══════════════════════════════════════ */
+function showFlash(msg,cls){
+  const el=document.getElementById('flash');
+  const hora=new Date().toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  el.innerHTML=msg+'<span class="flash-time">'+hora+'</span>';
+  el.className='flash show '+cls;
+  clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),2200);
+}
+
+/* ══════════════════════════════════════
+   TABLA
+══════════════════════════════════════ */
+function renderTable(){
+  const skel=document.getElementById('tbl-skeleton');
+  if(skel&&records.length>50){skel.style.display='block';}
+  const q=(document.getElementById('search-in').value||'').toLowerCase();
+  let rows=records.filter(r=>{
+    if(filterCh&&r.chofer!==filterCh)return false;
+    if(q&&!r.guia.toLowerCase().includes(q)&&!(r.chofer||'').toLowerCase().includes(q)&&!(r.fecha||'').includes(q))return false;
+    return true;
+  });
+  rows.sort((a,b)=>{let va=a[sortCol]??'',vb=b[sortCol]??'';return(va<vb?-1:va>vb?1:0)*(sortAsc?1:-1);});
+
+  const chs=[...new Set(records.map(r=>r.chofer).filter(Boolean))];
+  document.getElementById('ch-filter').innerHTML=chs.length
+    ?[`<span class="ch-pill${!filterCh?' active':''}" onclick="setFilter(null)">Todos (${records.length})</span>`,
+      ...chs.map(c=>{const n=records.filter(r=>r.chofer===c).length;
+        return`<span class="ch-pill${filterCh===c?' active':''}" onclick="setFilter('${escA(c)}')">${esc(c)} (${n})</span>`;})
+    ].join(''):'';
+
+  const base=['guia','tipo','chofer','zona','fecha','hora'];
+  const all=[...base,...extraCols];
+  document.getElementById('tbl-head').innerHTML=`<tr>
+    ${all.map(c=>`<th onclick="sortBy('${c}')">${c.toUpperCase()}${sortCol===c?(sortAsc?' ↑':' ↓'):''}</th>`).join('')}
+    <th></th></tr>`;
+
+  const body=document.getElementById('tbl-body');
+  if(!rows.length){body.innerHTML=`<tr><td colspan="${all.length+1}"><div class="empty-state">📦<br>Sin guías</div></td></tr>`;return;}
+  const show=rows.slice(0,300);
+  body.innerHTML=show.map(r=>`<tr>
+    ${base.map(c=>{
+      if(c==='tipo')return`<td><span style="font-size:0.6rem;background:var(--accent-light);color:var(--accent);padding:2px 8px;border-radius:10px;font-weight:700">${r.tipo||'—'}</span></td>`;
+      if(c==='zona')return`<td><span style="font-size:0.6rem;background:${r.zona==='FORANEO'?'var(--accent2-light)':'var(--success-light)'};color:${r.zona==='FORANEO'?'var(--accent2)':'var(--success)'};padding:2px 8px;border-radius:10px;font-weight:700">${r.zona||'HMO'}</span></td>`;
+      return`<td title="${escA(r[c]||'')}">${esc(r[c])||'—'}</td>`;
+    }).join('')}
+    ${extraCols.map(c=>`<td><input type="text" value="${escA(r[c]||'')}"
+      style="background:none;border:none;color:var(--text);font-family:var(--mono);font-size:0.72rem;width:100%;min-width:50px;outline:none"
+      onchange="updateField('${r.id}','${c}',this.value)"></td>`).join('')}
+    <td><button class="del-btn" onclick="deleteRecord('${r.id}')">✕</button></td>
+  </tr>`).join('');
+  if(rows.length>300)body.innerHTML+=`<tr><td colspan="${all.length+1}" style="text-align:center;padding:12px;color:var(--text2);font-size:0.7rem;font-weight:700">Mostrando 300/${rows.length} — filtra para ver más</td></tr>`;
+  if(skel)skel.style.display='none';
+}
+
+function setFilter(c){filterCh=c;renderTable();}
+function sortBy(c){if(sortCol===c)sortAsc=!sortAsc;else{sortCol=c;sortAsc=true;}renderTable();}
+async function updateField(id,col,val){const r=records.find(r=>r.id===id);if(r){r[col]=val;await persistRec(r);}}
+async function deleteRecord(id){
+  const r=records.find(r=>r.id===id);if(r)guidSet.delete(r.guia);
+  records=records.filter(r=>r.id!==id);await idbDel('records',id);updateStats();renderTable();
+}
+async function clearAll(everything=false){
+  const msg=everything
+    ?'¿Borrar ABSOLUTAMENTE TODO?\nRegistros + choferes + configuración. Irreversible.'
+    :'¿Borrar todos los registros?\n\nDescarga un backup antes si necesitas los datos.';
+  if(!confirm(msg))return;
+  records=[];guidSet=new Set();dupCount=0;
+  await idbClear('records');
+  if(everything){choferes=[];extraCols=[];activeChofer='';await idbClear('config');}
+  else await cfgSet('dupCount',0);
+  updateStats();updateChoferBox();renderTable();renderRecents();
+  if(everything)renderSettings();
+  toast('Borrado ✓');
+}
+
+/* ══════════════════════════════════════
+   SETTINGS
+══════════════════════════════════════ */
+function renderSettings(){
+  document.getElementById('ch-count').textContent=choferes.length;
+  document.getElementById('set-compat').checked=loadCompatMode();
+  document.getElementById('ch-list').innerHTML=choferes.map((c,i)=>`
+    <div class="col-item">
+      <input class="input-text" value="${escA(c)}" onchange="choferes[${i}]=this.value;persistCfg()" style="padding:8px 10px;font-size:0.82rem">
+      <button class="btn btn-red" style="flex:0 0 auto;padding:9px 13px;font-size:0.8rem" onclick="removeChofer(${i})">✕</button>
+    </div>`).join('');
+  document.getElementById('col-list').innerHTML=extraCols.map((c,i)=>`
+    <div class="col-item">
+      <input class="input-text" value="${escA(c)}" onchange="extraCols[${i}]=this.value;persistCfg()" style="padding:8px 10px;font-size:0.82rem">
+      <button class="btn btn-red" style="flex:0 0 auto;padding:9px 13px;font-size:0.8rem" onclick="removeCol(${i})">✕</button>
+    </div>`).join('');
+  document.getElementById('db-info').innerHTML=`
+    <div class="abox ${dbOK?'abox-ok':'abox-err'}">
+      ${dbOK?'✅ IndexedDB ACTIVO — Datos protegidos':'❌ IndexedDB no disponible'}<br>
+      Refrescar / cerrar la página <strong>NO borra los datos</strong>.<br>
+      ${records.length} registros · ${choferes.length} choferes
+    </div>
+    <div class="abox abox-warn">⚠ Solo borra datos: <strong>"Borrar datos del sitio"</strong> en ajustes del navegador.<br>Descarga Backup JSON al terminar el día por seguridad.</div>`;
+  const lh=document.getElementById('imile-learned-hint');
+  if(lh)lh.textContent=learnedImilePatterns.length+' prefijo'+(learnedImilePatterns.length!==1?'s':'')+' nuevo'+(learnedImilePatterns.length!==1?'s':'')+' aprendido'+(learnedImilePatterns.length!==1?'s':'');
+}
+async function addChofer(){
+  const inp=document.getElementById('new-ch-in');const v=inp.value.trim();if(!v)return;
+  if(!choferes.includes(v))choferes.push(v);inp.value='';
+  await persistCfg();renderSettings();toast('✓ '+v);
+}
+async function bulkChoferes(){
+  const ta=document.getElementById('bulk-ch');
+  const lines=ta.value.split('\n').map(l=>l.trim()).filter(Boolean);
+  let n=0;lines.forEach(l=>{if(!choferes.includes(l)){choferes.push(l);n++;}});
+  ta.value='';await persistCfg();renderSettings();toast(n+' choferes agregados ✓');
+}
+async function removeChofer(i){choferes.splice(i,1);await persistCfg();renderSettings();}
+async function addCol(){
+  const inp=document.getElementById('new-col-in');const v=inp.value.trim().replace(/\s+/g,'_').toLowerCase();if(!v)return;
+  extraCols.push(v);inp.value='';records.forEach(r=>{if(!(v in r))r[v]='';});await persistCfg();renderSettings();
+}
+async function removeCol(i){const col=extraCols[i];extraCols.splice(i,1);records.forEach(r=>delete r[col]);await persistCfg();renderSettings();}
+
+
+/* ════ Confirmación visual export ════ */
+function confirmExpCard(el){
+  if(!el)return;
+  const orig={cls:el.className,html:el.innerHTML};
+  el.classList.add('exported');
+  el.querySelector('.exp-icon').textContent='✅';
+  clearTimeout(el._expT);
+  el._expT=setTimeout(()=>{el.className=orig.cls;el.innerHTML=orig.html;},2500);
+}
+
+/* ══════════════════════════════════════
+   EXPORT EXCEL
+══════════════════════════════════════ */
+function buildExcelChoferColumns(recs){
+  const chMap={};
+  recs.forEach(r=>{
+    const c=r.chofer||'Sin asignar';
+    if(!chMap[c])chMap[c]=[];
+    chMap[c].push(r.guia);
+  });
+  const chNames=Object.keys(chMap);
+  const maxRows=chNames.length?Math.max(...chNames.map(c=>chMap[c].length)):0;
+  const matrix=[chNames];
+  for(let i=0;i<maxRows;i++){
+    matrix.push(chNames.map(c=>chMap[c][i]!==undefined?chMap[c][i]:''));
+  }
+  return{matrix,chMap,chNames};
+}
+
+/* ════ Selección de choferes antes de exportar Excel ════ */
+let excelSelectState={};
+function openExcelSelectModal(){
+  if(!records.length){toast('No hay datos');return;}
+  const chNames=[...new Set(records.map(r=>r.chofer||'Sin asignar'))].sort();
+  // Por defecto todos marcados
+  excelSelectState={};
+  chNames.forEach(c=>excelSelectState[c]=true);
+  renderExcelSelectList();
+  document.getElementById('excelsel-modal-bg').classList.add('show');
+}
+function renderExcelSelectList(){
+  const chNames=Object.keys(excelSelectState).sort();
+  const list=document.getElementById('excelsel-list');
+  list.innerHTML=chNames.map(c=>{
+    const n=records.filter(r=>(r.chofer||'Sin asignar')===c).length;
+    const checked=excelSelectState[c];
+    return `<div class="ch-check-row${checked?' checked':''}" data-ch="${escA(c)}">
+      <div class="ch-check-box">${checked?'✓':''}</div>
+      <div class="ch-check-name">${esc(c)}</div>
+      <div class="ch-check-count">${n} guías</div>
+    </div>`;
+  }).join('');
+  list.querySelectorAll('.ch-check-row').forEach(el=>{
+    el.addEventListener('click',()=>{
+      const ch=el.dataset.ch;
+      excelSelectState[ch]=!excelSelectState[ch];
+      renderExcelSelectList();
+    });
+  });
+}
+function excelSelectAll(val){
+  Object.keys(excelSelectState).forEach(c=>excelSelectState[c]=val);
+  renderExcelSelectList();
+}
+function confirmExcelSelect(){
+  const chosen=Object.keys(excelSelectState).filter(c=>excelSelectState[c]);
+  if(!chosen.length){toast('⚠ Selecciona al menos un chofer');return;}
+  document.getElementById('excelsel-modal-bg').classList.remove('show');
+  exportExcel(chosen);
+}
+
+function exportExcel(onlyChoferes){
+  if(!records.length){toast('No hay datos');return;}
+  const recs=onlyChoferes&&onlyChoferes.length
+    ?records.filter(r=>onlyChoferes.includes(r.chofer||'Sin asignar'))
+    :records;
+  if(!recs.length){toast('No hay datos para los choferes elegidos');return;}
+  const wb=XLSX.utils.book_new();
+  const {matrix,chMap,chNames}=buildExcelChoferColumns(recs);
+  const ws1=XLSX.utils.aoa_to_sheet(matrix);
+  ws1['!cols']=chNames.map(()=>({wch:22}));
+  XLSX.utils.book_append_sheet(wb,ws1,'Guías por Chofer');
+  const hdr=['GUÍA','TIPO','CHOFER','FECHA','HORA',...extraCols.map(c=>c.toUpperCase())];
+  const ws2=XLSX.utils.aoa_to_sheet([hdr,...recs.map(r=>[r.guia,r.tipo||'',r.chofer||'',r.fecha||'',r.hora||'',...extraCols.map(c=>r[c]||'')])]);
+  ws2['!cols']=hdr.map(()=>({wch:24}));
+  XLSX.utils.book_append_sheet(wb,ws2,'Detalle Completo');
+  Object.entries(chMap).forEach(([ch,guias])=>{
+    const data=[['N°','GUÍA',...extraCols.map(c=>c.toUpperCase())],...guias.map((g,i)=>[i+1,g,...extraCols.map(c=>{const r=recs.find(r=>r.guia===g&&r.chofer===ch);return r?r[c]||'':'';})])];
+    const ws=XLSX.utils.aoa_to_sheet(data);
+    ws['!cols']=[{wch:6},{wch:24},...extraCols.map(()=>({wch:20}))];
+    XLSX.utils.book_append_sheet(wb,ws,ch.substring(0,31));
+  });
+  const sumData=[['CHOFER','TOTAL GUÍAS','FECHAS'],...Object.entries(chMap).sort((a,b)=>b[1].length-a[1].length).map(([ch,gs])=>[ch,gs.length,[...new Set(recs.filter(r=>r.chofer===ch).map(r=>r.fecha))].join(', ')])];
+  const wsSum=XLSX.utils.aoa_to_sheet(sumData);
+  wsSum['!cols']=[{wch:28},{wch:14},{wch:40}];
+  XLSX.utils.book_append_sheet(wb,wsSum,'Resumen');
+  const filename=`guias_${today().replace(/\//g,'-')}.xlsx`;
+  // Guardar blob para compartir después
+  const wbout=XLSX.write(wb,{bookType:'xlsx',type:'array'});
+  window._lastExcelBlob=new Blob([wbout],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+  // Descargar
+  const url=URL.createObjectURL(window._lastExcelBlob);
+  const a=document.createElement('a');a.href=url;a.download=filename;a.click();
+  setTimeout(()=>URL.revokeObjectURL(url),5000);
+  toast('Excel descargado: '+filename);
+  confirmExpCard(document.querySelector('[onclick="openExcelSelectModal()"]'));
+}
+
+function exportCSV(){
+  if(!records.length){toast('No hay datos');return;}
+  const hdr=['guia','tipo','chofer','fecha','hora',...extraCols];
+  const dl=(name,c,t)=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([c],{type:t}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),5000);};
+  dl(`guias_${today().replace(/\//g,'-')}.csv`,
+    '\uFEFF'+[hdr.join(','),...records.map(r=>hdr.map(h=>`"${(r[h]||'').toString().replace(/"/g,'""')}"`).join(','))].join('\n'),
+    'text/csv;charset=utf-8');toast('CSV ✓');
+  confirmExpCard(document.querySelector('[onclick="exportCSV()"]'));
+}
+function exportJSON(){if(!records.length){toast('No hay datos');return;}exportBackupJSON();}
+function exportTXT(){
+  if(!records.length){toast('No hay datos');return;}
+  const dl=(n,c,t)=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([c],{type:t}));a.download=n;a.click();};
+  dl(`guias_${today().replace(/\//g,'-')}.txt`,records.map(r=>r.guia).join('\n'),'text/plain');toast('TXT ✓');
+}
+function exportHTML(){
+  if(!records.length){toast('No hay datos');return;}
+  const dl=(n,c,t)=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([c],{type:t}));a.download=n;a.click();};
+  const hdr=['guia','tipo','chofer','fecha','hora',...extraCols];
+  dl(`guias_${today().replace(/\//g,'-')}.html`,
+    `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Guías ${today()}</title>
+<style>body{font-family:Arial;padding:20px;font-size:13px}h2{margin-bottom:16px}table{border-collapse:collapse;width:100%}th{background:#2563eb;color:#fff;padding:10px 8px;text-align:left}td{padding:7px 8px;border-bottom:1px solid #e2e8f0}</style></head>
+<body><h2>📦 Guías — ${today()} — ${records.length} registros — ${nowStr()}</h2>
+<table><thead><tr>${hdr.map(h=>`<th>${h.toUpperCase()}</th>`).join('')}</tr></thead>
+<tbody>${records.map(r=>`<tr>${hdr.map(h=>`<td>${esc(r[h]||'')}</td>`).join('')}</tr>`).join('')}</tbody></table>
+
+<!-- DEBUG CONSOLE -->
+<button id="dbg-fab" onclick="toggleDebug()" title="Debug Console">🐛</button>
+<div id="dbg-panel">
+  <div id="dbg-header">
+    <span id="dbg-title">🐛 DEBUG CONSOLE</span>
+    <button id="dbg-clear" onclick="dbg._log=[];dbg._render()">LIMPIAR</button>
+    <button id="dbg-close" onclick="toggleDebug()">✕</button>
+  </div>
+  <div id="dbg-list"></div>
+</div>
+
+</body></html>`,'text/html');
+  toast('HTML ✓');
+  confirmExpCard(document.querySelector('[onclick="exportHTML()"]'));
+}
+function exportBackupJSON(silent=false){
+  const data={version:5,exported:nowStr(),records,choferes,extraCols,dupCount,activeChofer,learnedImilePatterns};
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));
+  a.download=`backup_${Date.now()}.json`;a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),5000);
+  if(!silent){toast('Backup JSON ✓');confirmExpCard(document.querySelector('[onclick="exportJSON()"]'));}
+}
+async function importBackup(event){
+  const file=event.target.files[0];if(!file)return;
+  try{
+    const data=JSON.parse(await file.text());
+    if(!data.records)throw new Error('Formato inválido');
+    if(!confirm(`Importar ${data.records.length} registros?\nExportado: ${data.exported||'?'}\n⚠ Reemplaza datos actuales.`))return;
+    records=data.records||[];choferes=data.choferes||[];extraCols=data.extraCols||[];
+    dupCount=data.dupCount||0;activeChofer=data.activeChofer||'';
+    learnedImilePatterns=data.learnedImilePatterns||[];
+    guidSet=new Set(records.map(r=>r.guia));
+    await idbClear('records');for(const r of records)await idbPut('records',r);
+    await persistCfg();await cfgSet('learnedImilePatterns',learnedImilePatterns);
+    updateStats();updateChoferBox();renderTable();renderRecents();
+    toast(records.length+' guías restauradas ✓');
+  }catch(e){toast('Error: '+e.message);}
+  event.target.value='';
+}
+
+function renderExport(){
+  document.getElementById('exp-cnt').textContent=records.length;
+  const chs=new Set(records.map(r=>r.chofer).filter(Boolean));
+  document.getElementById('exp-chs').textContent=chs.size;
+  const chMap={};records.forEach(r=>{const c=r.chofer||'Sin asignar';chMap[c]=(chMap[c]||0)+1;});
+  const sumEl=document.getElementById('ch-summary');
+  if(!Object.keys(chMap).length){
+    sumEl.innerHTML='<div style="color:var(--text2);font-size:0.78rem;padding:10px 0;font-weight:600">Sin datos todavía</div>';
+    return;
+  }
+  sumEl.innerHTML=Object.entries(chMap).sort((a,b)=>b[1]-a[1]).map(([c,n],idx)=>
+    `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1.5px solid var(--border2);gap:8px">
+      <span style="font-weight:700;font-size:0.82rem">👤 ${esc(c)}</span>
+      <span style="background:var(--accent);color:#fff;padding:3px 12px;border-radius:20px;font-size:0.72rem;font-weight:800;flex-shrink:0">${n} guías</span>
+      <button data-print-ch="${idx}" style="background:#1d4ed8;color:#fff;border:none;border-radius:8px;padding:5px 12px;font-size:0.65rem;font-weight:800;cursor:pointer;flex-shrink:0;letter-spacing:.5px">🖨️ IMPRIMIR</button>
+    </div>`).join('');
+  const chNames=Object.keys(chMap).sort((a,b)=>chMap[b]-chMap[a]);
+  sumEl.querySelectorAll('[data-print-ch]').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const idx=parseInt(btn.dataset.printCh);
+      printChofer(chNames[idx]);
+    });
+  });
+}
+
+/* ══════════════════════════════════════
+   AUDIO
+══════════════════════════════════════ */
+let actx=null;
+function getActx(){if(!actx)actx=new(window.AudioContext||window.webkitAudioContext)();return actx;}
+function beepOK(){
+  try{
+    const c=getActx();
+    const o=c.createOscillator(),g=c.createGain();
+    o.connect(g);g.connect(c.destination);
+    o.type='sine';o.frequency.value=1600;
+    g.gain.setValueAtTime(0,c.currentTime);
+    g.gain.linearRampToValueAtTime(0.4,c.currentTime+0.01);
+    g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+0.15);
+    o.start(c.currentTime);o.stop(c.currentTime+0.15);
+  }catch(e){}
+}
+function beepError(){
+  try{
+    const c=getActx();
+    [0,0.18].forEach((delay,i)=>{
+      const o=c.createOscillator(),g=c.createGain();
+      o.connect(g);g.connect(c.destination);
+      o.type='square';o.frequency.value=i===0?400:350;
+      g.gain.setValueAtTime(0,c.currentTime+delay);
+      g.gain.linearRampToValueAtTime(0.35,c.currentTime+delay+0.01);
+      g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+delay+0.14);
+      o.start(c.currentTime+delay);o.stop(c.currentTime+delay+0.14);
+    });
+  }catch(e){}
+}
+function beepInvalid(){
+  try{
+    const c=getActx();
+    [[0,880],[0.15,440],[0.30,880]].forEach(([delay,freq])=>{
+      const o=c.createOscillator(),g=c.createGain();
+      o.connect(g);g.connect(c.destination);
+      o.type='sawtooth';o.frequency.value=freq;
+      g.gain.setValueAtTime(0,c.currentTime+delay);
+      g.gain.linearRampToValueAtTime(0.3,c.currentTime+delay+0.01);
+      g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+delay+0.12);
+      o.start(c.currentTime+delay);o.stop(c.currentTime+delay+0.12);
+    });
+  }catch(e){}
+}
+
+/* ══════════════════════════════════════
+   MODO iMILE
+══════════════════════════════════════ */
+let iMileMode=false;
+const IMILE_PATTERNS=[
+  /^IM08\d{12}$/,
+  /^60[0-9]{11}$/,
+  /^48[0-9]{12}$/,
+  /^368\d{10}$/,
+  /^380\d{10}$/,
+];
+/* Patrones "aprendidos" a partir de códigos confirmados manualmente.
+   Se guardan como texto (source de RegExp) en IndexedDB para persistir
+   entre sesiones y se reconstruyen a RegExp al cargar la app. */
+let learnedImilePatterns=[]; // array de strings (regex source)
+function escapeRegex(s){return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');}
+function derivePrefixPattern(code){
+  // Letras seguidas de dígitos (ej: IM08xxxxxxxxxxxx)
+  const m=code.match(/^([A-Za-z]+)(\d+)$/);
+  if(m){
+    const letters=m[1],digits=m[2];
+    const prefixLen=Math.min(2,digits.length);
+    const prefix=letters+digits.slice(0,prefixLen);
+    const restLen=digits.length-prefixLen;
+    return '^'+escapeRegex(prefix)+'\\d{'+restLen+'}$';
+  }
+  // Solo dígitos
+  if(/^\d+$/.test(code)){
+    const prefixLen=Math.min(3,Math.max(1,code.length-1));
+    const prefix=code.slice(0,prefixLen);
+    const restLen=code.length-prefixLen;
+    return '^'+escapeRegex(prefix)+'\\d{'+restLen+'}$';
+  }
+  // Alfanumérico genérico: mitad como prefijo literal, resto como comodín de igual longitud
+  const prefixLen=Math.max(1,Math.ceil(code.length/2));
+  const prefix=code.slice(0,prefixLen);
+  const restLen=code.length-prefixLen;
+  return '^'+escapeRegex(prefix)+'.{'+restLen+'}$';
+}
+async function learnImilePattern(code){
+  const src=derivePrefixPattern(code);
+  if(!learnedImilePatterns.includes(src)){
+    learnedImilePatterns.push(src);
+    await cfgSet('learnedImilePatterns',learnedImilePatterns);
+    const lh=document.getElementById('imile-learned-hint');
+    if(lh)lh.textContent=learnedImilePatterns.length+' prefijo'+(learnedImilePatterns.length!==1?'s':'')+' nuevo'+(learnedImilePatterns.length!==1?'s':'')+' aprendido'+(learnedImilePatterns.length!==1?'s':'');
+  }
+}
+async function resetLearnedImile(){
+  if(!learnedImilePatterns.length){toast('No hay prefijos aprendidos');return;}
+  if(!confirm('¿Olvidar los '+learnedImilePatterns.length+' prefijos iMile aprendidos?\nVolverán a pedir confirmación la próxima vez que aparezcan.'))return;
+  learnedImilePatterns=[];
+  await cfgSet('learnedImilePatterns',learnedImilePatterns);
+  renderSettings();
+  toast('🗑 Prefijos aprendidos borrados');
+}
+function isValidImile(code){
+  if(IMILE_PATTERNS.some(p=>p.test(code)))return true;
+  return learnedImilePatterns.some(src=>{
+    try{return new RegExp(src).test(code);}catch(e){return false;}
+  });
+}
+function toggleImileMode(){
+  iMileMode=!iMileMode;
+  const badge=document.getElementById('imile-badge');
+  const dot=document.getElementById('imile-dot');
+  const sub=document.getElementById('imile-sub');
+  const overlay=document.getElementById('last4-overlay');
+  if(iMileMode){
+    badge.style.borderColor='#2563eb';badge.style.background='var(--accent-light)';
+    dot.style.background='#2563eb';sub.textContent='ON — avisa prefijos raros';
+    overlay.style.display='block';toast('Modo iMile ACTIVADO');
+  } else {
+    badge.style.borderColor='var(--border)';badge.style.background='var(--surface)';
+    dot.style.background='var(--border)';sub.textContent='Validación OFF';
+    overlay.style.display='none';
+    document.getElementById('last4-digits').textContent='—';
+    toast('Modo iMile desactivado');
+  }
+}
+function updateLast4(code){
+  if(!iMileMode||!code)return;
+  document.getElementById('last4-digits').textContent=code.length>=4?code.slice(-4):'—';
+}
+
+/* ══════════════════════════════════════
+   ZONA
+══════════════════════════════════════ */
+let activeZona='HMO';
+function onZonaChange(){
+  activeZona=document.getElementById('zona-select').value;
+  const saved=localStorage.getItem('activeChofer_'+activeZona)||'';
+  activeChofer=choferes.includes(saved)?saved:'';
+  updateChoferBox();renderTable();renderRecents();updateStats();
+  toast(activeZona==='HMO'?'Zona: Hermosillo 🏙':'Zona: Foráneo 🚌');
+}
+function saveZonaChofer(){localStorage.setItem('activeChofer_'+activeZona,activeChofer);}
+
+/* ══════════════════════════════════════
+   BUSCAR POR CÁMARA
+══════════════════════════════════════ */
+let camSearchScanner=null;
+function startCamSearch(){
+  if(typeof Html5Qrcode==='undefined'){toast('⚠ Librería de cámara aún cargando');return;}
+  document.getElementById('camsearch-modal-bg').classList.add('show');
+  document.getElementById('camsearch-result').innerHTML=
+    '<div style="color:var(--text2);font-size:0.78rem;text-align:center;padding:12px">Apunta al código de barras...</div>';
+  setTimeout(async()=>{
+    try{await ensureCamPermission();}catch(e){
+      document.getElementById('camsearch-result').innerHTML=
+        '<div style="color:var(--danger);padding:10px;font-size:0.78rem">❌ Permiso de cámara denegado</div>';
+      return;
+    }
+    if(camSearchScanner){try{await camSearchScanner.stop();}catch(e){}try{await camSearchScanner.clear();}catch(e){}}
+    camSearchScanner=new Html5Qrcode('camsearch-reader');
+    const tryStart=async(src)=>camSearchScanner.start(
+      src,
+      {fps:8,qrbox:{width:240,height:110}},
+      (code)=>{
+        const r=records.find(x=>x.guia===code.trim());
+        const el=document.getElementById('camsearch-result');
+        if(r){
+          el.innerHTML=`<div style="background:var(--success-light);border:2px solid var(--success);border-radius:var(--r-sm);padding:14px">
+            <div style="font-weight:900;font-size:1rem;font-family:var(--mono);color:var(--success);margin-bottom:8px">✅ ENCONTRADA</div>
+            <div style="font-size:0.85rem;font-weight:800;font-family:var(--mono)">${esc(r.guia)}</div>
+            <div style="font-size:0.78rem;margin-top:6px">👤 <strong>${esc(r.chofer||'Sin asignar')}</strong></div>
+            <div style="font-size:0.72rem;color:var(--text2)">${r.fecha||''} ${r.hora||''} · ${r.tipo||''}</div>
+          </div>`;
+        } else {
+          el.innerHTML=`<div style="background:var(--danger-light);border:2px solid var(--danger);border-radius:var(--r-sm);padding:14px">
+            <div style="font-weight:900;color:var(--danger);margin-bottom:6px">❌ NO ENCONTRADA</div>
+            <div style="font-size:0.82rem;font-family:var(--mono)">${esc(code)}</div>
+            <div style="font-size:0.72rem;color:var(--text2);margin-top:4px">No está en los registros actuales</div>
+          </div>`;
+        }
+        try{camSearchScanner.pause();}catch(e){}
+        setTimeout(()=>{try{camSearchScanner.resume();}catch(e){}},2500);
+      },()=>{}
+    );
+    try{
+      await tryStart({facingMode:'environment'});
+    }catch(e1){
+      try{await tryStart({facingMode:{ideal:'environment'}});}
+      catch(e2){
+        try{await tryStart(true);}
+        catch(e3){
+          document.getElementById('camsearch-result').innerHTML=
+            '<div style="color:var(--danger);padding:10px;font-size:0.78rem">❌ No se pudo iniciar la cámara: '+(e3.message||e3)+'</div>';
+        }
+      }
+    }
+  },300);
+}
+function closeCamSearch(){
+  document.getElementById('camsearch-modal-bg').classList.remove('show');
+  if(camSearchScanner){try{camSearchScanner.stop().catch(()=>{});}catch(e){}camSearchScanner=null;}
+}
+document.getElementById('camsearch-modal-bg').addEventListener('click',e=>{
+  if(e.target===document.getElementById('camsearch-modal-bg'))closeCamSearch();
+});
+
+/* ══════════════════════════════════════
+   COPIAR / TXT POR CHOFER
+══════════════════════════════════════ */
+let copyChMode='copy';
+function openCopyChoferModal(mode){
+  if(!records.length){toast('No hay datos');return;}
+  copyChMode=mode;
+  document.getElementById('copych-title').textContent=mode==='copy'?'📋 Copiar Guías':'📝 Exportar TXT';
+  const chNames=[...new Set(records.map(r=>r.chofer).filter(Boolean))].sort();
+  const list=document.getElementById('copych-list');
+  list.innerHTML=`<div class="ch-opt" data-ch="__ALL__" style="cursor:pointer">
+    <div class="ch-opt-av" style="font-size:0.65rem">ALL</div>
+    <div style="flex:1"><div class="ch-opt-name">Todos los choferes</div></div>
+    <div class="ch-opt-count">${records.length}</div>
+  </div>`+chNames.map((c,i)=>{
+    const n=records.filter(r=>r.chofer===c).length;
+    return `<div class="ch-opt" data-ch="${i}" style="cursor:pointer">
+      <div class="ch-opt-av">${ini(c)}</div>
+      <div style="flex:1"><div class="ch-opt-name">${esc(c)}</div></div>
+      <div class="ch-opt-count">${n}</div>
+    </div>`;
+  }).join('');
+  list.querySelectorAll('.ch-opt').forEach(el=>{
+    el.addEventListener('click',()=>{
+      const ch=el.dataset.ch;
+      const filtered=ch==='__ALL__'?records:records.filter(r=>r.chofer===chNames[parseInt(ch)]);
+      const guias=filtered.map(r=>r.guia).join('\n');
+      document.getElementById('copych-modal-bg').classList.remove('show');
+      if(copyChMode==='copy'){
+        navigator.clipboard.writeText(guias).then(()=>toast(`✓ ${filtered.length} guías copiadas`));
+      } else {
+        const a=document.createElement('a');
+        a.href=URL.createObjectURL(new Blob([guias],{type:'text/plain'}));
+        const label=ch==='__ALL__'?'todos':chNames[parseInt(ch)].replace(/\s+/g,'_');
+        a.download=`guias_${label}_${today().replace(/\//g,'-')}.txt`;
+        a.click();toast('TXT descargado ✓');
+      }
+    });
+  });
+  document.getElementById('copych-modal-bg').classList.add('show');
+}
+
+/* ══════════════════════════════════════
+   DASH
+══════════════════════════════════════ */
+function generateDash(){
+  if(!records.length){toast('No hay datos');return;}
+  const chMap={};
+  records.forEach(r=>{const c=r.chofer||'Sin asignar';chMap[c]=(chMap[c]||0)+1;});
+  const sorted=Object.entries(chMap).sort((a,b)=>b[1]-a[1]);
+  const W=640,H=Math.max(420,230+sorted.length*56+40);
+  const canvas=document.getElementById('dash-canvas');
+  canvas.width=W;canvas.height=H;
+  const ctx=canvas.getContext('2d');
+  const grad=ctx.createLinearGradient(0,0,W,H);
+  grad.addColorStop(0,'#1e3a8a');grad.addColorStop(1,'#1d4ed8');
+  ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='rgba(255,255,255,.05)';
+  for(let i=0;i<5;i++){ctx.beginPath();ctx.arc(W-50+i*25,50+i*25,70,0,Math.PI*2);ctx.fill();}
+  ctx.fillStyle='rgba(255,255,255,.13)';roundRect(ctx,24,24,W-48,76,12);ctx.fill();
+  ctx.fillStyle='#fff';ctx.font='bold 26px Arial';ctx.textAlign='left';
+  ctx.fillText('📦 EscanerGuías — Resumen',40,58);
+  ctx.font='13px Arial';ctx.fillStyle='rgba(255,255,255,.7)';
+  ctx.fillText(today()+' · '+nowStr().split(' ')[1],40,78);
+  const pill=(x,y,w,h,val,lbl)=>{
+    ctx.fillStyle='rgba(255,255,255,.15)';roundRect(ctx,x,y,w,h,10);ctx.fill();
+    ctx.fillStyle='#fff';ctx.font='bold 34px Arial';ctx.textAlign='center';
+    ctx.fillText(val,x+w/2,y+h*0.58);
+    ctx.font='11px Arial';ctx.fillStyle='rgba(255,255,255,.7)';
+    ctx.fillText(lbl,x+w/2,y+h*0.82);
+  };
+  const pw=(W-48-12)/3;
+  pill(24,112,pw,66,records.length,'TOTAL GUÍAS');
+  pill(24+pw+6,112,pw,66,sorted.length,'CHOFERES');
+  const hoy=records.filter(r=>r.fecha===today()).length;
+  pill(24+pw*2+12,112,pw,66,hoy,'HOY');
+  ctx.fillStyle='rgba(255,255,255,.2)';roundRect(ctx,24,190,W-48,26,7);ctx.fill();
+  ctx.fillStyle='rgba(255,255,255,.85)';ctx.font='bold 11px Arial';ctx.textAlign='left';
+  ctx.fillText('CHOFER',56,207);
+  ctx.textAlign='right';ctx.fillText('GUÍAS',W-32,207);
+  const maxN=sorted[0]?.[1]||1;
+  sorted.forEach(([ch,n],i)=>{
+    const y=224+i*56;
+    ctx.fillStyle=i%2===0?'rgba(255,255,255,.08)':'rgba(255,255,255,.04)';
+    roundRect(ctx,24,y,W-48,48,8);ctx.fill();
+    ctx.fillStyle='rgba(99,179,237,.4)';ctx.beginPath();ctx.arc(50,y+24,15,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#fff';ctx.font='bold 12px Arial';ctx.textAlign='center';
+    ctx.fillText(ch[0].toUpperCase(),50,y+29);
+    ctx.textAlign='left';ctx.font='bold 13px Arial';ctx.fillStyle='#fff';
+    ctx.fillText(ch.length>26?ch.slice(0,26)+'…':ch,72,y+19);
+    const barMax=W-200;const barW=Math.max(4,barMax*(n/maxN));
+    ctx.fillStyle='rgba(255,255,255,.12)';roundRect(ctx,72,y+28,barMax,10,5);ctx.fill();
+    ctx.fillStyle='#60a5fa';roundRect(ctx,72,y+28,barW,10,5);ctx.fill();
+    ctx.font='bold 15px Arial';ctx.fillStyle='#fff';ctx.textAlign='right';
+    ctx.fillText(n,W-30,y+20);
+    ctx.font='10px Arial';ctx.fillStyle='rgba(255,255,255,.6)';
+    ctx.fillText('guías',W-30,y+34);ctx.textAlign='left';
+  });
+  ctx.fillStyle='rgba(255,255,255,.4)';ctx.font='11px Arial';ctx.textAlign='left';
+  ctx.fillText('EscanerGuías · '+nowStr(),28,H-10);
+  document.getElementById('dash-modal-bg').classList.add('show');
+}
+function roundRect(ctx,x,y,w,h,r){
+  ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);
+  ctx.quadraticCurveTo(x+w,y,x+w,y+r);ctx.lineTo(x+w,y+h-r);
+  ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);
+  ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);
+  ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();
+}
+function downloadDash(){
+  const canvas=document.getElementById('dash-canvas');
+  const a=document.createElement('a');
+  a.download=`dash_${today().replace(/\//g,'-')}.png`;
+  a.href=canvas.toDataURL('image/png');a.click();toast('Imagen descargada ✓');
+}
+async function shareDash(){
+  const canvas=document.getElementById('dash-canvas');
+  canvas.toBlob(async(blob)=>{
+    const file=new File([blob],`dash_${today().replace(/\//g,'-')}.png`,{type:'image/png'});
+    if(navigator.canShare&&navigator.canShare({files:[file]})){
+      try{await navigator.share({files:[file],title:'Guías escaneadas'});return;}
+      catch(e){if(e.name==='AbortError')return;}
+    }
+    downloadDash();toast('Descargada — comparte desde galería');
+  },'image/png');
+}
+
+/* ══════════════════════════════════════
+   MANIFIESTO + FIRMA
+══════════════════════════════════════ */
+let sigDrawing=false,sigCtx=null,sigHasMark=false;
+function initSignatureCanvas(){
+  const canvas=document.getElementById('sig-canvas');
+  if(!canvas||canvas._sigInit)return;
+  canvas._sigInit=true;
+  sigCtx=canvas.getContext('2d');
+  sigCtx.strokeStyle='#0f172a';sigCtx.lineWidth=2.5;sigCtx.lineCap='round';sigCtx.lineJoin='round';
+  const pos=(e)=>{
+    const r=canvas.getBoundingClientRect();
+    const scaleX=canvas.width/r.width,scaleY=canvas.height/r.height;
+    const src=e.touches?e.touches[0]:e;
+    return{x:(src.clientX-r.left)*scaleX,y:(src.clientY-r.top)*scaleY};
+  };
+  canvas.addEventListener('mousedown',e=>{sigDrawing=true;const p=pos(e);sigCtx.beginPath();sigCtx.moveTo(p.x,p.y);});
+  canvas.addEventListener('mousemove',e=>{if(!sigDrawing)return;const p=pos(e);sigCtx.lineTo(p.x,p.y);sigCtx.stroke();sigHasMark=true;});
+  canvas.addEventListener('mouseup',()=>sigDrawing=false);
+  canvas.addEventListener('mouseleave',()=>sigDrawing=false);
+  canvas.addEventListener('touchstart',e=>{e.preventDefault();sigDrawing=true;const p=pos(e);sigCtx.beginPath();sigCtx.moveTo(p.x,p.y);},{passive:false});
+  canvas.addEventListener('touchmove',e=>{e.preventDefault();if(!sigDrawing)return;const p=pos(e);sigCtx.lineTo(p.x,p.y);sigCtx.stroke();sigHasMark=true;},{passive:false});
+  canvas.addEventListener('touchend',()=>sigDrawing=false);
+}
+function clearSignature(){
+  const canvas=document.getElementById('sig-canvas');
+  if(sigCtx)sigCtx.clearRect(0,0,canvas.width,canvas.height);
+  sigHasMark=false;
+}
+function openManifiestoModal(){
+  const sel=document.getElementById('manifest-ch-select');
+  sel.innerHTML='<option value="">— Todos los choferes —</option>'+
+    [...new Set(records.map(r=>r.chofer).filter(Boolean))].sort()
+      .map(c=>`<option value="${escA(c)}"${c===activeChofer?'selected':''}>${esc(c)}</option>`).join('');
+  const fsel=document.getElementById('manifest-fecha-select');
+  const fechas=[...new Set(records.map(r=>r.fecha).filter(Boolean))].sort().reverse();
+  fsel.innerHTML='<option value="">— Todas las fechas —</option>'+
+    fechas.map(f=>`<option value="${f}"${f===today()?'selected':''}>${f}</option>`).join('');
+  const emp=localStorage.getItem('manifest_empresa')||'';
+  document.getElementById('manifest-empresa').value=emp;
+  document.getElementById('manifest-modal-bg').classList.add('show');
+  renderManifestPreview();
+  setTimeout(initSignatureCanvas,100);
+}
+function closeManifiestoModal(){document.getElementById('manifest-modal-bg').classList.remove('show');}
+document.getElementById('manifest-modal-bg').addEventListener('click',e=>{if(e.target===document.getElementById('manifest-modal-bg'))closeManifiestoModal();});
+document.getElementById('reasign-modal-bg').addEventListener('click',e=>{if(e.target===document.getElementById('reasign-modal-bg'))closeReasignModal();});
+
+function getManifestRecords(){
+  const ch=document.getElementById('manifest-ch-select').value;
+  const fecha=document.getElementById('manifest-fecha-select').value;
+  return records.filter(r=>{
+    if(ch&&r.chofer!==ch)return false;
+    if(fecha&&r.fecha!==fecha)return false;
+    return true;
+  });
+}
+function renderManifestPreview(){
+  const recs=getManifestRecords();
+  const ch=document.getElementById('manifest-ch-select').value;
+  const fecha=document.getElementById('manifest-fecha-select').value;
+  const chofMap={};
+  recs.forEach(r=>{const c=r.chofer||'Sin asignar';chofMap[c]=(chofMap[c]||0)+1;});
+  const preview=document.getElementById('manifest-preview');
+  if(!recs.length){preview.innerHTML='<span style="color:var(--text2)">Sin guías para los filtros seleccionados</span>';return;}
+  preview.innerHTML=
+    `<div style="font-weight:800;color:var(--accent);margin-bottom:4px">📋 Vista previa del manifiesto</div>`+
+    `<div>📦 <strong>${recs.length}</strong> guías ${fecha?'del '+fecha:'(todas las fechas)'}</div>`+
+    (ch?'':`<div style="margin-top:6px">`+Object.entries(chofMap).sort((a,b)=>b[1]-a[1])
+      .map(([c,n])=>`👤 <strong>${esc(c)}</strong>: ${n} guías`).join(' &nbsp;·&nbsp; ')+'</div>')+
+    `<div style="margin-top:4px;color:var(--text2);font-size:0.7rem">Se generará 1 manifiesto${ch?` para ${esc(ch)}`:`por cada chofer (${Object.keys(chofMap).length})`}</div>`;
+}
+function printManifiesto(){
+  const empresa=document.getElementById('manifest-empresa').value.trim();
+  if(empresa)localStorage.setItem('manifest_empresa',empresa);
+  const ch=document.getElementById('manifest-ch-select').value;
+  const fecha=document.getElementById('manifest-fecha-select').value;
+  const allRecs=getManifestRecords();
+  if(!allRecs.length){toast('Sin guías para imprimir');return;}
+  const canvas=document.getElementById('sig-canvas');
+  const sigImg=sigHasMark?canvas.toDataURL('image/png'):'';
+  const chofMap={};
+  allRecs.forEach(r=>{const c=r.chofer||'Sin asignar';if(!chofMap[c])chofMap[c]=[];chofMap[c].push(r);});
+  const manifiestos=Object.entries(chofMap).map(([chName,recs])=>buildManifiestoHTML(chName,recs,empresa,fecha,sigImg)).join('<div style="page-break-after:always"></div>');
+  const win=window.open('','_blank','width=900,height=700');
+  win.document.write(`<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8">
+<title>Manifiesto — ${fecha||today()}</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:Arial,sans-serif;font-size:12px;color:#0f172a;background:#fff}
+.manifest{padding:24px 28px;max-width:800px;margin:0 auto}
+.hdr{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #2563eb;padding-bottom:12px;margin-bottom:14px}
+.hdr-left h1{font-size:20px;font-weight:900;color:#2563eb;margin-bottom:2px}
+.hdr-left .sub{font-size:11px;color:#475569}
+.hdr-right{text-align:right;font-size:11px;color:#475569;line-height:1.8}
+.hdr-right strong{font-size:13px;color:#0f172a}
+.info-row{display:flex;gap:12px;margin-bottom:12px}
+.info-box{flex:1;border:1.5px solid #c7d7ff;border-radius:8px;padding:10px 12px;background:#f0f4ff}
+.info-box .lbl{font-size:9px;font-weight:700;color:#2563eb;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:3px}
+.info-box .val{font-size:15px;font-weight:900;color:#0f172a}
+.info-box .val-sm{font-size:12px;font-weight:700;color:#0f172a}
+table{width:100%;border-collapse:collapse;margin-bottom:16px;font-size:11px}
+thead th{background:#2563eb;color:#fff;padding:7px 8px;text-align:left;font-size:10px;letter-spacing:.5px}
+tbody tr:nth-child(even){background:#f8faff}
+tbody td{padding:6px 8px;border-bottom:1px solid #e2e8f0}
+.num-col{width:36px;text-align:center;font-weight:700;color:#2563eb}
+.footer{border-top:2px solid #e2e8f0;padding-top:16px;margin-top:8px}
+.sig-area{display:flex;gap:24px;align-items:flex-end}
+.sig-box{flex:1}
+.sig-lbl{font-size:9px;font-weight:700;color:#475569;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px}
+.sig-img{width:100%;height:90px;border-bottom:2px solid #0f172a;display:flex;align-items:flex-end;justify-content:center;padding-bottom:4px}
+.sig-img img{max-height:80px;max-width:100%;object-fit:contain}
+.sig-line{border-bottom:2px solid #0f172a;height:90px}
+.sig-name{font-size:10px;font-weight:700;text-align:center;margin-top:4px;color:#0f172a}
+.stamp-box{width:120px;height:100px;border:2px dashed #c7d7ff;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:10px;font-weight:700;text-align:center}
+@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}button{display:none}}
+</style></head><body>${manifiestos}
+<script>window.onload=()=>{window.print();}<\/script>
+
+<!-- DEBUG CONSOLE -->
+<button id="dbg-fab" onclick="toggleDebug()" title="Debug Console">🐛</button>
+<div id="dbg-panel">
+  <div id="dbg-header">
+    <span id="dbg-title">🐛 DEBUG CONSOLE</span>
+    <button id="dbg-clear" onclick="dbg._log=[];dbg._render()">LIMPIAR</button>
+    <button id="dbg-close" onclick="toggleDebug()">✕</button>
+  </div>
+  <div id="dbg-list"></div>
+</div>
+
+</body></html>`);
+  win.document.close();
+  toast('✓ Abriendo manifiesto para imprimir');
+  closeManifiestoModal();
+}
+function buildManifiestoHTML(chName,recs,empresa,fecha,sigImg){
+  const fechaLabel=fecha||today();
+  const hoy=nowStr();
+  const guiaRows=recs.map((r,i)=>`<tr>
+    <td class="num-col">${i+1}</td>
+    <td style="font-family:monospace;font-weight:700">${esc(r.guia)}</td>
+    <td>${esc(r.tipo||'—')}</td>
+    <td>${esc(r.fecha||'—')}</td>
+    <td>${esc(r.hora||'—')}</td>
+    ${extraCols.map(c=>`<td>${esc(r[c]||'—')}</td>`).join('')}
+  </tr>`).join('');
+  const extraHeads=extraCols.map(c=>`<th>${c.toUpperCase()}</th>`).join('');
+  return `<div class="manifest">
+  <div class="hdr">
+    <div class="hdr-left">
+      <h1>📦 ${esc(empresa||'Manifiesto de Entrega')}</h1>
+      <div class="sub">${empresa?'Manifiesto de Entrega · ':''} Generado: ${hoy}</div>
+    </div>
+    <div class="hdr-right">
+      <div>Fecha: <strong>${fechaLabel}</strong></div>
+      <div>Chofer: <strong>${esc(chName)}</strong></div>
+      <div>Folio: <strong>${Date.now().toString().slice(-6)}</strong></div>
+    </div>
+  </div>
+  <div class="info-row">
+    <div class="info-box"><div class="lbl">👤 Chofer</div><div class="val-sm">${esc(chName)}</div></div>
+    <div class="info-box"><div class="lbl">📦 Total Guías</div><div class="val">${recs.length}</div></div>
+    <div class="info-box"><div class="lbl">📅 Fecha</div><div class="val-sm">${fechaLabel}</div></div>
+  </div>
+  <table>
+    <thead><tr><th>#</th><th>GUÍA</th><th>TIPO</th><th>FECHA</th><th>HORA</th>${extraHeads}</tr></thead>
+    <tbody>${guiaRows}</tbody>
+  </table>
+  <div class="footer">
+    <div class="sig-area">
+      <div class="sig-box">
+        <div class="sig-lbl">Firma del chofer</div>
+        <div class="sig-img">${sigImg?`<img src="${sigImg}" alt="firma">`:''}</div>
+        <div class="sig-name">${esc(chName)}</div>
+      </div>
+      <div class="sig-box">
+        <div class="sig-lbl">Recibí conforme — ${recs.length} guías</div>
+        <div class="sig-line"></div>
+        <div class="sig-name">Firma y nombre del receptor</div>
+      </div>
+      <div class="stamp-box">SELLO<br>EMPRESA</div>
+    </div>
+  </div>
+</div>`;
+}
+function printChofer(chName){
+  openManifiestoModal();
+  setTimeout(()=>{
+    const sel=document.getElementById('manifest-ch-select');
+    for(let i=0;i<sel.options.length;i++){
+      if(sel.options[i].value===chName){sel.selectedIndex=i;break;}
+    }
+    renderManifestPreview();
+  },50);
+}
+
+let tT;
+function toast(msg){
+  const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');
+  clearTimeout(tT);tT=setTimeout(()=>el.classList.remove('show'),2600);
+}
+
+/* ══════════════════════════════════════
+   TEMAS
+══════════════════════════════════════ */
+/* ── Tema de iconos ── */
+function setIconTheme(t){
+  document.documentElement.setAttribute('data-icons', t==='emoji' ? '' : t);
+  localStorage.setItem('app_icons', t);
+  ['emoji','lucide','ios'].forEach(n=>{
+    const b=document.getElementById('iopt-'+n);
+    if(b)b.classList.toggle('active',n===t);
+  });
+}
+function loadIconTheme(){
+  const t=localStorage.getItem('app_icons')||'emoji';
+  setIconTheme(t);
+}
+
+function setTheme(t){
+  document.documentElement.setAttribute('data-theme',t==='blue'?'':t);
+  localStorage.setItem('app_theme',t);
+  // Marcar opción activa en el menú
+  ['blue','dark','green','black','white'].forEach(n=>{
+    const btn=document.getElementById('topt-'+n);
+    if(btn)btn.classList.toggle('active',n===t);
+  });
+  // Actualizar ícono del botón con color del tema activo
+  const colors={blue:'#2563eb',dark:'#312e81',green:'#16a34a',black:'#000',white:'#ffffff'};
+  const pb=document.getElementById('theme-picker-btn');
+  if(pb)pb.style.borderColor=colors[t]||colors.blue;
+  // Actualizar theme-color meta
+  const mcolors={blue:'#2563eb',dark:'#0f1117',green:'#16a34a',black:'#000000',white:'#ffffff'};
+  document.querySelector('meta[name="theme-color"]').setAttribute('content',mcolors[t]||mcolors.blue);
+}
+
+function toggleThemePicker(){
+  const menu=document.getElementById('theme-picker-menu');
+  if(!menu)return;
+  const open=menu.style.display==='block';
+  menu.style.display=open?'none':'block';
+  if(!open){
+    // Cerrar al click fuera
+    setTimeout(()=>{
+      const close=e=>{
+        if(!document.getElementById('theme-picker-wrap')?.contains(e.target)){
+          menu.style.display='none';
+          document.removeEventListener('click',close);
+        }
+      };
+      document.addEventListener('click',close);
+    },10);
+  }
+}
+
+/* ── Header hide/show durante escaneo ── */
+function hideHeaderForScan(){
+  document.querySelector('header').classList.add('cam-hidden');
+  document.querySelector('.tabs').classList.add('cam-hidden');
+  document.getElementById('hdr-show-btn').classList.add('visible');
+}
+function restoreHeader(){
+  document.querySelector('header').classList.remove('cam-hidden');
+  document.querySelector('.tabs').classList.remove('cam-hidden');
+  document.getElementById('hdr-show-btn').classList.remove('visible');
+}
+let _hdrRevealTimer;
+function revealHeader(){
+  // Muestra el header temporalmente sin parar la cámara
+  restoreHeader();
+  clearTimeout(_hdrRevealTimer);
+  if(camOn){
+    _hdrRevealTimer=setTimeout(hideHeaderForScan,4000);
+  }
+}
+function loadTheme(){
+  const t=localStorage.getItem('app_theme')||'blue';
+  setTheme(t);
+}
+
+/* ══════════════════════════════════════
+   EDITAR / BORRAR CHOFER (long press)
+══════════════════════════════════════ */
+let choferEditIdx=-1;
+function openChoferEditModal(idx){
+  choferEditIdx=idx;
+  const name=choferes[idx]||'';
+  document.getElementById('choedit-av').textContent=ini(name);
+  document.getElementById('choedit-name').textContent=name;
+  document.getElementById('choedit-input').value=name;
+  document.getElementById('choedit-modal-bg').classList.add('show');
+  closeModal();
+  if(navigator.vibrate)navigator.vibrate(40);
+}
+async function confirmEditChofer(){
+  const newName=document.getElementById('choedit-input').value.trim();
+  if(!newName){toast('⚠ Escribe un nombre');return;}
+  const oldName=choferes[choferEditIdx];
+  choferes[choferEditIdx]=newName;
+  // Actualizar registros con el nombre viejo
+  records.forEach(r=>{if(r.chofer===oldName)r.chofer=newName;});
+  // Persistir todos los registros modificados
+  for(const r of records.filter(r=>r.chofer===newName&&records.find(x=>x.id===r.id)))await persistRec(r);
+  if(activeChofer===oldName)activeChofer=newName;
+  await persistCfg();
+  document.getElementById('choedit-modal-bg').classList.remove('show');
+  updateChoferBox();renderSettings();
+  toast('✓ Renombrado a '+newName);
+}
+async function confirmDeleteChofer(){
+  const name=choferes[choferEditIdx];
+  const n=records.filter(r=>r.chofer===name).length;
+  if(!confirm(`¿Eliminar chofer "${name}"?\n${n>0?`⚠ Tiene ${n} guías registradas que quedarán sin asignar.`:'No tiene guías registradas.'}`))return;
+  choferes.splice(choferEditIdx,1);
+  records.forEach(r=>{if(r.chofer===name)r.chofer='Sin asignar';});
+  for(const r of records.filter(r=>r.chofer==='Sin asignar'))await persistRec(r);
+  if(activeChofer===name)activeChofer='';
+  await persistCfg();
+  document.getElementById('choedit-modal-bg').classList.remove('show');
+  updateChoferBox();renderSettings();
+  toast('🗑 Chofer eliminado');
+}
+document.getElementById('choedit-modal-bg').addEventListener('click',e=>{
+  if(e.target===document.getElementById('choedit-modal-bg'))
+    document.getElementById('choedit-modal-bg').classList.remove('show');
+});
+
+/* ══════════════════════════════════════
+   INIT
+══════════════════════════════════════ */
+async function init(){
+  loadTheme();
+  loadIconTheme();
+  try{
+    await openDB();
+    records=await idbGetAll('records');
+    records.sort((a,b)=>b.timestamp-a.timestamp);
+    choferes=await cfgGet('choferes',[]);
+    extraCols=await cfgGet('extraCols',[]);
+    dupCount=await cfgGet('dupCount',0);
+    activeChofer=await cfgGet('activeChofer','');
+    selectedCamId=await cfgGet('selectedCamId','');
+    learnedImilePatterns=await cfgGet('learnedImilePatterns',[]);
+    guidSet=new Set(records.map(r=>r.guia));
+    await loadSessions();
+    setDbPill('ok','💾 OK');
+    if(records.length)toast('✓ '+records.length+' guías cargadas');
+    else toast('✓ App lista — selecciona un chofer');
+  }catch(e){
+    dbOK=false;setDbPill('err','❌ DB ERR');
+    document.getElementById('db-banner').style.display='block';
+    toast('⚠ DB no disponible: '+e.message);
+  }
+  updateStats();updateChoferBox();renderRecents();
+}
+
+window.addEventListener('DOMContentLoaded',init);
+window.addEventListener('beforeunload',()=>{if(dbOK)persistCfg();});
+
+// Reanudar cámara si Android la apaga al pasar la app a background
+let camWasOnBeforeHide=false;
+document.addEventListener('visibilitychange',async()=>{
+  if(document.hidden){
+    camWasOnBeforeHide=camOn;
+    if(camOn)await stopCam();
+  } else {
+    if(camWasOnBeforeHide){
+      // Esperar 600ms para que Android libere el hardware
+      await new Promise(r=>setTimeout(r,600));
+      await startCam();
+    }
+  }
+});
+</script>
+
+
+
+
+</script>
+
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"7f7b0fd8732c4326aae4b9d58d5c514a","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+
+<script>
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js')
+    .then(function(reg){ console.log('Service Worker registrado:', reg.scope); })
+    .catch(function(err){ console.error('Error al registrar el Service Worker:', err); });
+}
+</script>
+
+</body>
+</html>

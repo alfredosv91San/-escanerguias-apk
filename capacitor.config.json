@@ -1,0 +1,8 @@
+{
+  "appId": "mx.hermosillo.escanerguias",
+  "appName": "EscanerGuías",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  }
+}
