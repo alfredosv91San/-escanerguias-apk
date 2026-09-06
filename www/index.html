@@ -1654,6 +1654,51 @@ function sendShiftSummaryWA(session){
   window.open(`https://wa.me/?text=${msg}`,'_blank');
 }
 
+/* ══════════════════════════════════════
+   GUARDAR / DESCARGAR ARCHIVOS
+   En navegador o PWA (GitHub Pages) usamos el truco clásico de
+   <a download> con Blob, que el navegador intercepta y guarda solo.
+   Dentro del APK (Capacitor), el WebView de Android NO tiene ese
+   "descargador" — el click no hace nada. Ahí usamos el plugin nativo
+   Filesystem para escribir el archivo y el plugin Share para abrir
+   el selector nativo de Android (Guardar en Archivos, WhatsApp,
+   Drive, etc.), que es como sí se puede "descargar" desde un WebView.
+══════════════════════════════════════ */
+function blobToBase64(blob){
+  return new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onloadend=()=>resolve(String(reader.result).split(',')[1]);
+    reader.onerror=reject;
+    reader.readAsDataURL(blob);
+  });
+}
+async function saveFile(filename,blob){
+  const Cap=window.Capacitor;
+  const isNative=!!(Cap&&Cap.isNativePlatform&&Cap.isNativePlatform());
+  if(!isNative){
+    // Comportamiento normal de navegador/PWA — sin cambios
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');a.href=url;a.download=filename;a.click();
+    setTimeout(()=>URL.revokeObjectURL(url),5000);
+    return;
+  }
+  try{
+    const {Filesystem,Share}=Cap.Plugins||{};
+    if(!Filesystem)throw new Error('Plugin Filesystem no disponible');
+    const base64Data=await blobToBase64(blob);
+    await Filesystem.writeFile({path:filename,data:base64Data,directory:'CACHE'});
+    const uriResult=await Filesystem.getUri({path:filename,directory:'CACHE'});
+    if(Share){
+      await Share.share({title:filename,url:uriResult.uri});
+    }else{
+      toast('✓ Guardado: '+filename);
+    }
+  }catch(e){
+    console.error('[saveFile] error nativo',e);
+    toast('❌ No se pudo guardar/compartir: '+(e.message||e));
+  }
+}
+
 function exportExcelFromRecords(recs, dateStr){
   if(!recs||!recs.length){toast('Sin datos');return;}
   const wb=XLSX.utils.book_new();
@@ -1674,9 +1719,7 @@ function exportExcelFromRecords(recs, dateStr){
   const filename=`guias_${(dateStr||today()).replace(/\//g,'-')}.xlsx`;
   const wbout=XLSX.write(wb,{bookType:'xlsx',type:'array'});
   const blob=new Blob([wbout],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');a.href=url;a.download=filename;a.click();
-  setTimeout(()=>URL.revokeObjectURL(url),5000);
+  saveFile(filename,blob);
   toast('Excel descargado: '+filename);
 }
 
@@ -2624,9 +2667,7 @@ function exportExcel(onlyChoferes){
   const wbout=XLSX.write(wb,{bookType:'xlsx',type:'array'});
   window._lastExcelBlob=new Blob([wbout],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
   // Descargar
-  const url=URL.createObjectURL(window._lastExcelBlob);
-  const a=document.createElement('a');a.href=url;a.download=filename;a.click();
-  setTimeout(()=>URL.revokeObjectURL(url),5000);
+  saveFile(filename,window._lastExcelBlob);
   toast('Excel descargado: '+filename);
   confirmExpCard(document.querySelector('[onclick="openExcelSelectModal()"]'));
 }
@@ -2634,7 +2675,7 @@ function exportExcel(onlyChoferes){
 function exportCSV(){
   if(!records.length){toast('No hay datos');return;}
   const hdr=['guia','tipo','chofer','fecha','hora',...extraCols];
-  const dl=(name,c,t)=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([c],{type:t}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),5000);};
+  const dl=(name,c,t)=>{saveFile(name,new Blob([c],{type:t}));};
   dl(`guias_${today().replace(/\//g,'-')}.csv`,
     '\uFEFF'+[hdr.join(','),...records.map(r=>hdr.map(h=>`"${(r[h]||'').toString().replace(/"/g,'""')}"`).join(','))].join('\n'),
     'text/csv;charset=utf-8');toast('CSV ✓');
@@ -2643,12 +2684,12 @@ function exportCSV(){
 function exportJSON(){if(!records.length){toast('No hay datos');return;}exportBackupJSON();}
 function exportTXT(){
   if(!records.length){toast('No hay datos');return;}
-  const dl=(n,c,t)=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([c],{type:t}));a.download=n;a.click();};
+  const dl=(n,c,t)=>{saveFile(n,new Blob([c],{type:t}));};
   dl(`guias_${today().replace(/\//g,'-')}.txt`,records.map(r=>r.guia).join('\n'),'text/plain');toast('TXT ✓');
 }
 function exportHTML(){
   if(!records.length){toast('No hay datos');return;}
-  const dl=(n,c,t)=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([c],{type:t}));a.download=n;a.click();};
+  const dl=(n,c,t)=>{saveFile(n,new Blob([c],{type:t}));};
   const hdr=['guia','tipo','chofer','fecha','hora',...extraCols];
   dl(`guias_${today().replace(/\//g,'-')}.html`,
     `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Guías ${today()}</title>
@@ -2674,10 +2715,8 @@ function exportHTML(){
 }
 function exportBackupJSON(silent=false){
   const data={version:5,exported:nowStr(),records,choferes,extraCols,dupCount,activeChofer,learnedImilePatterns};
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));
-  a.download=`backup_${Date.now()}.json`;a.click();
-  setTimeout(()=>URL.revokeObjectURL(a.href),5000);
+  const filename=`backup_${Date.now()}.json`;
+  saveFile(filename,new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));
   if(!silent){toast('Backup JSON ✓');confirmExpCard(document.querySelector('[onclick="exportJSON()"]'));}
 }
 async function importBackup(event){
@@ -2961,11 +3000,9 @@ function openCopyChoferModal(mode){
       if(copyChMode==='copy'){
         navigator.clipboard.writeText(guias).then(()=>toast(`✓ ${filtered.length} guías copiadas`));
       } else {
-        const a=document.createElement('a');
-        a.href=URL.createObjectURL(new Blob([guias],{type:'text/plain'}));
         const label=ch==='__ALL__'?'todos':chNames[parseInt(ch)].replace(/\s+/g,'_');
-        a.download=`guias_${label}_${today().replace(/\//g,'-')}.txt`;
-        a.click();toast('TXT descargado ✓');
+        saveFile(`guias_${label}_${today().replace(/\//g,'-')}.txt`,new Blob([guias],{type:'text/plain'}));
+        toast('TXT descargado ✓');
       }
     });
   });
@@ -3041,9 +3078,8 @@ function roundRect(ctx,x,y,w,h,r){
 }
 function downloadDash(){
   const canvas=document.getElementById('dash-canvas');
-  const a=document.createElement('a');
-  a.download=`dash_${today().replace(/\//g,'-')}.png`;
-  a.href=canvas.toDataURL('image/png');a.click();toast('Imagen descargada ✓');
+  const filename=`dash_${today().replace(/\//g,'-')}.png`;
+  canvas.toBlob(blob=>{saveFile(filename,blob);toast('Imagen descargada ✓');},'image/png');
 }
 async function shareDash(){
   const canvas=document.getElementById('dash-canvas');
